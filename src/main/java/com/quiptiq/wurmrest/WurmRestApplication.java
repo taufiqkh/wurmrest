@@ -2,7 +2,6 @@ package com.quiptiq.wurmrest;
 
 import javax.ws.rs.WebApplicationException;
 import java.net.MalformedURLException;
-import java.rmi.RemoteException;
 
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
@@ -19,7 +18,7 @@ public class WurmRestApplication extends Application<WurmRestConfiguration> {
 
     private static final int UNKNOWN_ERROR = 1;
 
-    private WurmService wurmService;
+    private RmiGameService wurmService;
 
     public static void main(String[] args) {
         try {
@@ -44,7 +43,7 @@ public class WurmRestApplication extends Application<WurmRestConfiguration> {
     public void run(WurmRestConfiguration wurmRestConfiguration, Environment environment) throws
             Exception {
         try {
-            wurmService = new WurmService(
+            wurmService = new RmiGameService(
                     wurmRestConfiguration.getHostName(),
                     wurmRestConfiguration.getPort(),
                     wurmRestConfiguration.getRmiName());

@@ -2,8 +2,8 @@ package com.quiptiq.wurmrest;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-import com.codahale.metrics.annotation.Timed;
 import com.quiptiq.wurmrest.bank.BalanceResult;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -13,15 +13,22 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Path("/bank")
 @Produces(MediaType.APPLICATION_JSON)
 public class BankResource {
-    private final WurmService service;
+    private final RmiGameService service;
 
-    public BankResource(WurmService service) {
+    public BankResource(RmiGameService service) {
         this.service = service;
     }
 
     @GET
-    @Timed
     public BalanceResult getBalance(@QueryParam("player") @NotEmpty String player) {
-        return service.getBalance(player);
+        BalanceResult result = service.getBalance(player);
+        if (result.getErrorType() == BalanceResult.BalanceResultType.BAD_PLAYER_ID) {
+            throw new WebApplicationException(result.getError().orElse("No player found with " +
+                    "the name " + player), Response.Status.NOT_FOUND);
+        } else if (result.getErrorType() != BalanceResult.BalanceResultType.OK) {
+            throw new WebApplicationException(result.getError().orElse("Unexpected error"),
+                    Response.Status.INTERNAL_SERVER_ERROR);
+        }
+        return result;
     }
 }

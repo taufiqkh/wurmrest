@@ -16,13 +16,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Provides access to the wurm service, encapsulating the calls to the game servers.
  */
-public class WurmService {
-    private static final Logger logger = LoggerFactory.getLogger(WurmService.class);
+public class RmiGameService implements GameService {
+    private static final Logger logger = LoggerFactory.getLogger(RmiGameService.class);
 
     private WebInterface webInterface;
-    private static final int BALANCE_INVALID = -1;
-
-    private static final String ERROR_MESSAGE_NULL = "Error message was returned but was null";
 
     private final String hostName;
     private final int port;
@@ -46,7 +43,7 @@ public class WurmService {
         return newInterface;
     }
 
-    public WurmService(String hostName, int port, String name) throws MalformedURLException {
+    public RmiGameService(String hostName, int port, String name) throws MalformedURLException {
         this.hostName = hostName;
         this.port = port;
         this.name = name;
@@ -115,18 +112,19 @@ public class WurmService {
         long playerId = refreshWebInterface().getPlayerId(playerName);
         if (playerId > 0) {
             long balance = refreshWebInterface().getMoney(playerId, playerName);
-            return new BalanceResult(playerName, balance, timeStamp);
+            return new BalanceResult(balance, timeStamp);
         } else {
-            return new BalanceResult(playerName, BalanceResult.BalanceResultType.BAD_PLAYER_ID,
+            return new BalanceResult(BalanceResult.BalanceResultType.BAD_PLAYER_ID,
                     "Bad player id", timeStamp);
         }
     };
     private final Invoker webInterfaceInvoker = new Invoker();
+    @Override
     public BalanceResult getBalance(String playerName) {
         BalanceResult result = webInterfaceInvoker.invoke("getBalance", balanceInvocation,
                 playerName);
         if (result == null) {
-            result = new BalanceResult(playerName, BalanceResult.BalanceResultType.UNKNOWN,
+            result = new BalanceResult(BalanceResult.BalanceResultType.UNKNOWN,
                     "Could not invoke web interface", LocalDateTime.now());
         }
         return result;
