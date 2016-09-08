@@ -1,5 +1,9 @@
 package com.quiptiq.wurmrest;
 
+import javax.ws.rs.WebApplicationException;
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
+
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -39,10 +43,15 @@ public class WurmRestApplication extends Application<WurmRestConfiguration> {
     @Override
     public void run(WurmRestConfiguration wurmRestConfiguration, Environment environment) throws
             Exception {
-        wurmService = new WurmService(
-                wurmRestConfiguration.getHostName(),
-                wurmRestConfiguration.getPort(),
-                wurmRestConfiguration.getRmiName());
+        try {
+            wurmService = new WurmService(
+                    wurmRestConfiguration.getHostName(),
+                    wurmRestConfiguration.getPort(),
+                    wurmRestConfiguration.getRmiName());
+        } catch (MalformedURLException e) {
+            // Can't do anything if the URL is bad
+            throw new WebApplicationException("Couldn't create service", e);
+        }
         final BankResource bank = new BankResource(wurmService);
         final WurmRestHealthCheck healthCheck = new WurmRestHealthCheck("testing");
         environment.healthChecks().register("template", healthCheck);

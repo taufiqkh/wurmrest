@@ -1,6 +1,9 @@
 package com.quiptiq.wurmrest.bank;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Represents the result of a call to check a bank balance.
@@ -9,7 +12,8 @@ public class BalanceResult {
     public enum BalanceResultType {
         OK(0),
         BAD_PLAYER_ID(1),
-        UNKNOWN(2);
+        NEGATIVE_BALANCE(2),
+        UNKNOWN(-1);
 
         private final int value;
         BalanceResultType(int value) {
@@ -39,7 +43,7 @@ public class BalanceResult {
 
     public BalanceResult(String playerName, long balance, LocalDateTime timeStamp) {
         if (balance < 0) {
-            this.errorType = BalanceResultType.UNKNOWN;
+            this.errorType = BalanceResultType.NEGATIVE_BALANCE;
             this.errorMessage = "Negative balance reported";
         } else {
             this.errorType = BalanceResultType.OK;
@@ -50,22 +54,36 @@ public class BalanceResult {
         this.timeStamp = timeStamp;
     }
 
-    public BalanceResultType getErrorType() {
-        return errorType;
+    @JsonProperty
+    public boolean getOk() {
+        return errorType == BalanceResultType.OK;
     }
 
-    public boolean isError() {
-        return errorMessage != null;
+    @JsonProperty
+    public Optional<Integer> getErrorCode() {
+        return errorType == BalanceResultType.OK ?
+                Optional.empty() :
+                Optional.of(errorType.value);
     }
 
+    @JsonProperty
+    public Optional<String> getError() {
+        return errorType == BalanceResultType.OK ?
+                Optional.empty() :
+                Optional.ofNullable(errorMessage);
+    }
+
+    @JsonProperty
     public String getPlayerName() {
         return playerName;
     }
 
+    @JsonProperty
     public LocalDateTime getTimeStamp() {
         return timeStamp;
     }
 
+    @JsonProperty
     public long getBalance() {
         return balance;
     }

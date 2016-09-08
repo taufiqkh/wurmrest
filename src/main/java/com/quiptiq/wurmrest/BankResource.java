@@ -3,10 +3,7 @@ package com.quiptiq.wurmrest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import java.rmi.RemoteException;
-
 import com.codahale.metrics.annotation.Timed;
-import com.quiptiq.wurmrest.bank.Balance;
 import com.quiptiq.wurmrest.bank.BalanceResult;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -24,11 +21,7 @@ public class BankResource {
 
     @GET
     @Timed
-    public Balance getBalance(@QueryParam("player") @NotEmpty String player) {
-        try {
-            return new Balance(service.getBalance(player));
-        } catch (RemoteException e) {
-            throw new WebApplicationException("Could not get balance", e);
-        }
+    public BalanceResult getBalance(@QueryParam("player") @NotEmpty String player) {
+        return service.getBalance(player);
     }
 }

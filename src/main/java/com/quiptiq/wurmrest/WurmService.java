@@ -24,17 +24,33 @@ public class WurmService {
 
     private static final String ERROR_MESSAGE_NULL = "Error message was returned but was null";
 
+    private final String hostName;
+    private final int port;
+    private final String name;
+
     /**
      * Key for maps that, when present, indicates an error.
      */
     private static final String ERROR_KEY = "Error";
 
-    public WurmService(String hostname, int port, String name) throws RemoteException,
-            NotBoundException, MalformedURLException {
-        String lookup = "//" + hostname + ":" + port + "/" + name;
+    private WebInterface attemptLookup() throws MalformedURLException {
+        String lookup = "//" + hostName + ":" + port + "/" + name;
         logger.info("Creating new web service at {}", lookup);
-        webInterface = (WebInterface) java.rmi.Naming.lookup(lookup);
+        WebInterface newInterface = null;
+        try {
+            newInterface = (WebInterface) java.rmi.Naming.lookup(lookup);
+        } catch (NotBoundException | RemoteException e) {
+            logger.error("Couldn't look up remote interface at " + lookup, e);
+        }
         logger.info("Lookup performed successfully");
+        return newInterface;
+    }
+
+    public WurmService(String hostName, int port, String name) throws MalformedURLException {
+        this.hostName = hostName;
+        this.port = port;
+        this.name = name;
+        webInterface = attemptLookup();
     }
 
     private Optional<String> getErrorMessage(Map<String, ?> map) {
@@ -51,15 +67,68 @@ public class WurmService {
         return Optional.of(errorMessage);
     }
 
-    public BalanceResult getBalance(String playerName) throws RemoteException {
+    private WebInterface refreshWebInterface() {
+        if (webInterface == null) {
+            try {
+                webInterface = attemptLookup();
+            } catch (MalformedURLException e) {
+                logger.error("URL Exception was not caught on initialisation", e);
+                webInterface = null;
+            }
+        }
+        return webInterface;
+    }
+
+    @FunctionalInterface
+    private interface Invocation<T, R> {
+        R apply(T t) throws RemoteException;
+    }
+
+    /**
+     * Calls invocations, wrapping the call in web interface refreshes.
+     */
+    private class Invoker {
+        public <T, R> R invoke(String methodName, Invocation<T, R> invocation, T t) {
+            if (webInterface == null) {
+                if (refreshWebInterface() == null) {
+                    logger.error("Unable to refresh while calling method {}", methodName);
+                    return null;
+                }
+            }
+            try {
+                return invocation.apply(t);
+            } catch (RemoteException e) {
+                logger.error("Could not invoke method {}", methodName);
+                logger.error("Exception encountered during invocation", e);
+                try {
+                    webInterface = refreshWebInterface();
+                    return invocation.apply(t);
+                } catch (RemoteException e2) {
+                    logger.error("Could not invoke method again after refreshing web interface", e);
+                }
+            }
+            return null;
+        }
+    }
+    private Invocation<String, BalanceResult> balanceInvocation = playerName -> {
         LocalDateTime timeStamp = LocalDateTime.now();
-        long playerId = webInterface.getPlayerId(playerName);
+        long playerId = refreshWebInterface().getPlayerId(playerName);
         if (playerId > 0) {
-            long balance = webInterface.getMoney(playerId, playerName);
+            long balance = refreshWebInterface().getMoney(playerId, playerName);
             return new BalanceResult(playerName, balance, timeStamp);
         } else {
             return new BalanceResult(playerName, BalanceResult.BalanceResultType.BAD_PLAYER_ID,
                     "Bad player id", timeStamp);
         }
+    };
+    private final Invoker webInterfaceInvoker = new Invoker();
+    public BalanceResult getBalance(String playerName) {
+        BalanceResult result = webInterfaceInvoker.invoke("getBalance", balanceInvocation,
+                playerName);
+        if (result == null) {
+            result = new BalanceResult(playerName, BalanceResult.BalanceResultType.UNKNOWN,
+                    "Could not invoke web interface", LocalDateTime.now());
+        }
+        return result;
     }
 }
