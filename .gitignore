@@ -224,3 +224,6 @@ pip-log.txt
 
 # Exclude wav files, they are intermediate working files only
 *.wav
+
+# Maven shade
+dependency-reduced-pom.xml
