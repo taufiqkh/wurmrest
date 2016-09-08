@@ -12,18 +12,21 @@ import org.hibernate.validator.constraints.Length;
 public final class Balance {
     private LocalDateTime timeStamp;
 
+    private int status;
+
     @Length(max = WurmConstants.MAX_NAME_LENGTH)
     private String player;
 
-    private int money;
+    private long money;
 
     public Balance() {
         // Jackson deserialisation
     }
-    public Balance(String player, int money) {
-        timeStamp = LocalDateTime.now();
-        this.player = player;
-        this.money = money;
+    public Balance(BalanceResult balanceResult) {
+        timeStamp = balanceResult.getTimeStamp();
+        player = balanceResult.getPlayerName();
+        money = balanceResult.getBalance();
+        status = balanceResult.getErrorType().getValue();
     }
 
     /**
@@ -46,7 +49,12 @@ public final class Balance {
      * @return The amount of money the player has in the bank.
      */
     @JsonProperty
-    public int getMoney() {
+    public long getMoney() {
         return money;
+    }
+
+    @JsonProperty
+    public int getStatus() {
+        return status;
     }
 }

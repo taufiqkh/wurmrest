@@ -1,13 +1,13 @@
 package com.quiptiq.wurmrest;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+
+import java.rmi.RemoteException;
 
 import com.codahale.metrics.annotation.Timed;
 import com.quiptiq.wurmrest.bank.Balance;
+import com.quiptiq.wurmrest.bank.BalanceResult;
 import org.hibernate.validator.constraints.NotEmpty;
 
 /**
@@ -16,12 +16,19 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Path("/bank")
 @Produces(MediaType.APPLICATION_JSON)
 public class BankResource {
-    public BankResource() {
+    private final WurmService service;
+
+    public BankResource(WurmService service) {
+        this.service = service;
     }
 
     @GET
     @Timed
     public Balance getBalance(@QueryParam("player") @NotEmpty String player) {
-        return new Balance(player, 0);
+        try {
+            return new Balance(service.getBalance(player));
+        } catch (RemoteException e) {
+            throw new WebApplicationException("Could not get balance", e);
+        }
     }
 }

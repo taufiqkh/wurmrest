@@ -15,6 +15,8 @@ public class WurmRestApplication extends Application<WurmRestConfiguration> {
 
     private static final int UNKNOWN_ERROR = 1;
 
+    private WurmService wurmService;
+
     public static void main(String[] args) {
         try {
             new WurmRestApplication().run(args);
@@ -31,13 +33,17 @@ public class WurmRestApplication extends Application<WurmRestConfiguration> {
 
     @Override
     public void initialize(Bootstrap<WurmRestConfiguration> bootstrap) {
-        // nothing to do yet
+
     }
 
     @Override
     public void run(WurmRestConfiguration wurmRestConfiguration, Environment environment) throws
             Exception {
-        final BankResource bank = new BankResource();
+        wurmService = new WurmService(
+                wurmRestConfiguration.getHostName(),
+                wurmRestConfiguration.getPort(),
+                wurmRestConfiguration.getRmiName());
+        final BankResource bank = new BankResource(wurmService);
         final WurmRestHealthCheck healthCheck = new WurmRestHealthCheck("testing");
         environment.healthChecks().register("template", healthCheck);
         environment.jersey().register(bank);
