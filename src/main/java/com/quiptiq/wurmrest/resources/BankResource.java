@@ -15,7 +15,6 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Path("/bank")
 @Produces(MediaType.APPLICATION_JSON)
 public class BankResource {
-    private static final String UNKNOWN_ERROR = "Unable to perform method call getBalance";
     private final RmiGameService service;
 
     public BankResource(RmiGameService service) {
@@ -29,7 +28,7 @@ public class BankResource {
         if (result.isError()) {
             // We don't currently differentiate between errors
             throw new WebApplicationException(
-                    result.getError().orElse(UNKNOWN_ERROR), Response.Status.SERVICE_UNAVAILABLE);
+                    result.getError(), Response.Status.SERVICE_UNAVAILABLE);
         }
         return result.getValue();
     }

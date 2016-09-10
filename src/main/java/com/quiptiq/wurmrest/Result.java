@@ -49,8 +49,8 @@ public class Result<T> {
     /**
      * @return Error for this result. If this result is not in error, returns null.
      */
-    public Optional<String> getError() {
-        return Optional.ofNullable(errorMessage);
+    public String getError() {
+        return errorMessage;
     }
 
     /**

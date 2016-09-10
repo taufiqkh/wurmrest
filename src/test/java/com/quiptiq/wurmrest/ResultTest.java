@@ -13,6 +13,7 @@ public class ResultTest {
     public void errorResult() {
         Result<String> result = Result.error("Error");
         assertTrue("Result created with error should be in error", result.isError());
+        result.getError();
         assertFalse("Result created with error should not be success", result.isSuccess());
     }
 
