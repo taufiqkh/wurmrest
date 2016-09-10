@@ -12,7 +12,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 /**
  * Resource representing the bank for all players.
  */
-@Path("/bank/{player}")
+@Path("/bank")
 @Produces(MediaType.APPLICATION_JSON)
 public class BankResource {
     private static final String UNKNOWN_ERROR = "Unable to perform method call getBalance";
@@ -23,6 +23,7 @@ public class BankResource {
     }
 
     @GET
+    @Path("/{player}/balance")
     public Balance getBalance(@PathParam("player") @NotEmpty String player) {
         Result<Balance> result = service.getBalance(player);
         if (result.isError()) {

@@ -33,7 +33,10 @@ public class BankResourceTest {
         Balance balance = new Balance(10);
         when(testService.getBalance(playerName)).thenReturn(Result.success(balance));
         assertEquals(
-                resources.client().target("/bank/" + playerName).request().get(Balance.class)
+                resources.client()
+                        .target("/bank/" + playerName + "/balance")
+                        .request()
+                        .get(Balance.class)
                         .getBalance(),
                 balance.getBalance());
     }
