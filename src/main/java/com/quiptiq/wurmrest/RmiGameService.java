@@ -25,11 +25,6 @@ public class RmiGameService implements GameService {
     private final int port;
     private final String name;
 
-    /**
-     * Key for maps that, when present, indicates an error.
-     */
-    private static final String ERROR_KEY = "Error";
-
     private WebInterface attemptLookup() throws MalformedURLException {
         String lookup = "//" + hostName + ":" + port + "/" + name;
         logger.info("Creating new web service at {}", lookup);
@@ -48,20 +43,6 @@ public class RmiGameService implements GameService {
         this.port = port;
         this.name = name;
         webInterface = attemptLookup();
-    }
-
-    private Optional<String> getErrorMessage(Map<String, ?> map) {
-        Object message = map.get(ERROR_KEY);
-        if (message == null) {
-            return Optional.empty();
-        }
-        String errorMessage;
-        try {
-            errorMessage = (String) message;
-        } catch (ClassCastException e) {
-            errorMessage = "Error returned but could not cast to String: " + message.toString();
-        }
-        return Optional.of(errorMessage);
     }
 
     private WebInterface refreshWebInterface() {
@@ -83,9 +64,23 @@ public class RmiGameService implements GameService {
 
     /**
      * Calls invocations, wrapping the call in web interface refreshes.
+     *
      */
     private class Invoker {
-        public <T, R> R invoke(String methodName, Invocation<T, R> invocation, T t) {
+        /**
+         * Invokes the method using the specified invocation function, with argument and return
+         * types. The call is wrapped in try/catch in the case of a null or invalid web interface.
+         * If an error occurs when the call is first made, the interface is refreshed and called
+         * again. If the call fails again the method returns null.
+         *
+         * @param methodName Name of the method, for logging
+         * @param invocation Invocation
+         * @param t Argument to use
+         * @param <T> Type of the argument
+         * @param <R> Return type
+         * @return Result of the call, or null if the call failed.
+         */
+        <T, R> R invoke(String methodName, Invocation<T, R> invocation, T t) {
             if (webInterface == null) {
                 if (refreshWebInterface() == null) {
                     logger.error("Unable to refresh while calling method {}", methodName);
@@ -107,25 +102,26 @@ public class RmiGameService implements GameService {
             return null;
         }
     }
-    private Invocation<String, BalanceResult> balanceInvocation = playerName -> {
+    private final Invoker webInterfaceInvoker = new Invoker();
+
+    private Invocation<String, Result<BalanceResult>> balanceInvocation = playerName -> {
         LocalDateTime timeStamp = LocalDateTime.now();
         long playerId = refreshWebInterface().getPlayerId(playerName);
         if (playerId > 0) {
             long balance = refreshWebInterface().getMoney(playerId, playerName);
-            return new BalanceResult(balance, timeStamp);
+            return Result.success(new BalanceResult(balance, timeStamp));
         } else {
-            return new BalanceResult(BalanceResult.BalanceResultType.BAD_PLAYER_ID,
-                    "Bad player id", timeStamp);
+            return Result.error("Bad player id");
         }
     };
-    private final Invoker webInterfaceInvoker = new Invoker();
+
     @Override
-    public BalanceResult getBalance(String playerName) {
-        BalanceResult result = webInterfaceInvoker.invoke("getBalance", balanceInvocation,
+    public Result<BalanceResult> getBalance(String playerName) {
+        Result<BalanceResult> result = webInterfaceInvoker.invoke("getBalance", balanceInvocation,
                 playerName);
+        Result<BalanceResult> foo = Result.error("asd");
         if (result == null) {
-            result = new BalanceResult(BalanceResult.BalanceResultType.UNKNOWN,
-                    "Could not invoke web interface", LocalDateTime.now());
+            result = Result.error("Could not invoke web interface");
         }
         return result;
     }

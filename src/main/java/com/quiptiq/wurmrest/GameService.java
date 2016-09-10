@@ -11,5 +11,5 @@ interface GameService {
      * @param playerName Name of the player for which the balance is returned.
      * @return Balance for player with the given name.
      */
-    BalanceResult getBalance(String playerName);
+    Result<BalanceResult> getBalance(String playerName);
 }
