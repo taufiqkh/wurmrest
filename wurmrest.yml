@@ -1,6 +1,12 @@
 # Sample configuration file
+
+# Configuration entry containing the details of the RMI service to which this server will attempt
+# to connect
 rmi:
+  # Name of the host on which the RMI service is running
   hostName: localhost
+  # Port on which the RMI service listens
   port: 7220
+  # Name of the web interface entry in the RMI service
   objectName: WebInterface
 
