@@ -1,6 +1,5 @@
 package com.quiptiq.wurmrest.rmi;
 
-import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.Optional;
 
@@ -14,35 +13,20 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Tests the RMI game service calls by providing a stub webinterface.
+ * Tests the RMI game service calls by providing a stub WebInterface.
  */
 public class RmiGameServiceTest {
-    private RmiProvider provider;
     private WebInterface webInterface;
 
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private Optional<WebInterface> stubInterface;
-
-    RmiGameService service;
+    private RmiGameService service;
 
     @Before
     public void setup() throws Exception {
         webInterface = mock(WebInterface.class);
-        stubInterface = Optional.of(webInterface);
-        provider = mock(RmiProvider.class);
+        Optional<WebInterface> stubInterface = Optional.of(webInterface);
+        RmiProvider provider = mock(RmiProvider.class);
         when(provider.getOrRefreshWebInterface()).thenReturn(stubInterface);
         service = new RmiGameService(provider);
-    }
-
-    /**
-     * When a provider has a bad URL the RmiGameService should fail fast, throwing
-     * MalformedURLException as soon as it is instantiated.
-     */
-    @Test(expected = MalformedURLException.class)
-    public void badUrlShouldFailFast() throws MalformedURLException {
-        RmiProvider failProvider = mock(RmiProvider.class);
-        when(failProvider.getOrRefreshWebInterface()).thenThrow(MalformedURLException.class);
-        new RmiGameService(failProvider);
     }
 
     /**

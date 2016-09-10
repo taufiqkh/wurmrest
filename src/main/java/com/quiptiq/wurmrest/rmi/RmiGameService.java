@@ -1,9 +1,7 @@
 package com.quiptiq.wurmrest.rmi;
 
 import javax.annotation.Nonnull;
-import java.net.MalformedURLException;
 import java.rmi.RemoteException;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import com.quiptiq.wurmrest.Result;
@@ -35,9 +33,8 @@ public class RmiGameService {
      * service.
      *
      * @param rmiProvider Provides the WebInterface for RMI invocation
-     * @throws MalformedURLException propagated through retrieval of a WebInterface.
      */
-    public RmiGameService(RmiProvider rmiProvider) throws MalformedURLException {
+    public RmiGameService(RmiProvider rmiProvider) {
         this.rmiProvider = rmiProvider;
         Optional<WebInterface> newWebInterface = rmiProvider.getOrRefreshWebInterface();
         if (newWebInterface.isPresent()) {
@@ -96,8 +93,7 @@ public class RmiGameService {
         }
     }
 
-    private Invocation<String, Balance> balanceInvocation = playerName -> {
-        LocalDateTime callStarted = LocalDateTime.now();
+    private final Invocation<String, Balance> balanceInvocation = playerName -> {
         long playerId = webInterface.getPlayerId(playerName);
         if (playerId > 0) {
             long balance = webInterface.getMoney(playerId, playerName);

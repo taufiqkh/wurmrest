@@ -2,11 +2,7 @@ package com.quiptiq.wurmrest;
 
 import javax.annotation.Nonnull;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Represents the result of an RmiGameService call. A result may either be an error or a success, as
@@ -44,11 +40,11 @@ public class Result<T> {
      */
     public boolean isError() {
         return errorMessage != null;
-    };
+    }
 
     public boolean isSuccess() {
         return errorMessage == null;
-    };
+    }
 
     /**
      * @return Error for this result. If this result is not in error, returns null.

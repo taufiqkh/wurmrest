@@ -20,9 +20,6 @@ public class WurmRestApplication extends Application<WurmRestConfiguration> {
 
     private static final int UNKNOWN_ERROR = 1;
 
-    private RmiGameService wurmService;
-    private RmiProvider rmiProvider;
-
     public static void main(String[] args) {
         try {
             new WurmRestApplication().run(args);
@@ -45,6 +42,9 @@ public class WurmRestApplication extends Application<WurmRestConfiguration> {
     @Override
     public void run(WurmRestConfiguration wurmRestConfiguration, Environment environment) throws
             Exception {
+        RmiProvider rmiProvider;
+        RmiGameService wurmService;
+
         try {
             rmiProvider = new RmiProvider(wurmRestConfiguration.getHostName(),
                     wurmRestConfiguration.getPort(),

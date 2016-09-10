@@ -7,7 +7,7 @@ import com.codahale.metrics.health.HealthCheck;
  * is running correctly.
  */
 public class WurmRestHealthCheck extends HealthCheck {
-    private String template;
+    private final String template;
 
     public WurmRestHealthCheck(String template) {
         this.template = template;

@@ -9,7 +9,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 
 /**
- * Encapsulates Dropwizard Configuration
+ * Encapsulates DropWizard Configuration
  */
 public class WurmRestConfiguration extends Configuration {
     @NotEmpty
