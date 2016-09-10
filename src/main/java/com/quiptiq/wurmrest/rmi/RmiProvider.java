@@ -22,6 +22,11 @@ public class RmiProvider {
     private final String lookup;
 
     /**
+     * Password used in interface calls
+     */
+    private final String password;
+
+    /**
      * RMI stub to WebInterface
      */
     private WebInterface webInterface;
@@ -51,8 +56,10 @@ public class RmiProvider {
      * @throws MalformedURLException if the hostName, port and object name cannot be combined to
      * form a valid URL.
      */
-    public RmiProvider(String hostName, int port, String objectName) throws MalformedURLException {
+    public RmiProvider(String hostName, int port, String objectName, String password) throws
+            MalformedURLException {
         this.lookup = "//" + hostName + ":" + port + "/" + objectName;
+        this.password = password;
         webInterface = attemptLookup();
     }
 
@@ -75,4 +82,11 @@ public class RmiProvider {
         return Optional.ofNullable(webInterface);
     }
 
+    /**
+     * Each call specifies a common password. This password is returned for use in calls.
+     * @return password for use in calls
+     */
+    public String getPassword() {
+        return password;
+    }
 }

@@ -13,7 +13,7 @@
         <wurm.java.version>1.8</wurm.java.version>
         <dropwizard.version>1.0.0</dropwizard.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <wurm.build.id>836486</wurm.build.id>
+        <wurm.build.id>1266498</wurm.build.id>
     </properties>
 
     <dependencies>

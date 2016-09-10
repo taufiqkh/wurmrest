@@ -24,6 +24,8 @@ rmi:
   port: 7220
   # Name of the web interface entry in the RMI service
   objectName: WebInterface
+  # Password to use when making RMI calls
+  password: yourpassword
 ```
 
 ## API

@@ -93,15 +93,14 @@ public class RmiGameService {
         }
     }
 
-    private final Invocation<String, Balance> balanceInvocation = playerName -> {
-        long playerId = webInterface.getPlayerId(playerName);
-        if (playerId > 0) {
-            long balance = webInterface.getMoney(playerId, playerName);
-            return Result.success(new Balance(balance));
-        } else {
-            return Result.error("Bad player id");
-        }
-    };
+    /**
+     * Convenience method to retrieve the password, especially given that the rmiProvider referred
+     * to by lambdas may not be initialized when the lambda is created.
+     * @return Password for the RMI interface.
+     */
+    private String getPassword() {
+        return rmiProvider.getPassword();
+    }
 
     /**
      * Get the balance for the given player.
@@ -111,4 +110,15 @@ public class RmiGameService {
     public Result<Balance> getBalance(String playerName) {
         return webInterfaceInvoker.invoke("getBalance", balanceInvocation, playerName);
     }
+
+    private final Invocation<String, Balance> balanceInvocation = playerName -> {
+        String password = getPassword();
+        long playerId = webInterface.getPlayerId(password, playerName);
+        if (playerId > 0) {
+            long balance = webInterface.getMoney(password, playerId, playerName);
+            return Result.success(new Balance(balance));
+        } else {
+            return Result.error("Bad player id");
+        }
+    };
 }
