@@ -5,7 +5,7 @@ import java.rmi.RemoteException;
 import java.util.Optional;
 
 import com.quiptiq.wurmrest.Result;
-import com.quiptiq.wurmrest.bank.BalanceResult;
+import com.quiptiq.wurmrest.bank.Balance;
 import com.wurmonline.server.webinterface.WebInterface;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,7 +71,7 @@ public class RmiGameServiceTest {
     public void shouldErrorIfWebInterfaceAlwaysErrors() throws Exception {
         String playerName = "Wilma";
         when(webInterface.getPlayerId(playerName)).thenThrow(RemoteException.class);
-        Result<BalanceResult> result = service.getBalance(playerName);
+        Result<Balance> result = service.getBalance(playerName);
         assertTrue("Interface errors should result in error", result.isError());
     }
 
@@ -91,7 +91,7 @@ public class RmiGameServiceTest {
                 .thenThrow(RemoteException.class)
                 .thenReturn(playerId);
         when(webInterface.getMoney(playerId, playerName)).thenReturn(balance);
-        Result<BalanceResult> result = service.getBalance(playerName);
+        Result<Balance> result = service.getBalance(playerName);
         assertTrue("Known player should still result in success",
                 result.isSuccess());
         assertEquals("Correct balance should still be returned after error recovery",
@@ -106,7 +106,7 @@ public class RmiGameServiceTest {
         long balance = 42;
         when(webInterface.getPlayerId(playerName)).thenReturn(playerId);
         when(webInterface.getMoney(playerId, playerName)).thenReturn(balance);
-        Result<BalanceResult> result = service.getBalance(playerName);
+        Result<Balance> result = service.getBalance(playerName);
         assertTrue("Known player with valid balance should result in success", result.isSuccess());
         assertEquals("Should return correct balance", balance, result.getValue().getBalance());
     }

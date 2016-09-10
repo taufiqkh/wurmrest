@@ -6,9 +6,8 @@ import java.rmi.RemoteException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import com.quiptiq.wurmrest.GameService;
 import com.quiptiq.wurmrest.Result;
-import com.quiptiq.wurmrest.bank.BalanceResult;
+import com.quiptiq.wurmrest.bank.Balance;
 import com.wurmonline.server.webinterface.WebInterface;
 
 import org.slf4j.Logger;
@@ -17,7 +16,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Provides access to the wurm service, encapsulating the calls to the game servers.
  */
-public class RmiGameService implements GameService {
+public class RmiGameService {
     private static final Logger logger = LoggerFactory.getLogger(RmiGameService.class);
 
     private WebInterface webInterface;
@@ -74,7 +73,7 @@ public class RmiGameService implements GameService {
             if (webInterface == null) {
                 Optional<WebInterface> latest = rmiProvider.getOrRefreshWebInterface();
                 if (!latest.isPresent()) {
-                    return Result.error("Could not retrieve latest");
+                    return Result.error("Could not create stub for web interface");
                 }
                 webInterface = latest.get();
             }
@@ -97,19 +96,23 @@ public class RmiGameService implements GameService {
         }
     }
 
-    private Invocation<String, BalanceResult> balanceInvocation = playerName -> {
-        LocalDateTime timeStamp = LocalDateTime.now();
+    private Invocation<String, Balance> balanceInvocation = playerName -> {
+        LocalDateTime callStarted = LocalDateTime.now();
         long playerId = webInterface.getPlayerId(playerName);
         if (playerId > 0) {
             long balance = webInterface.getMoney(playerId, playerName);
-            return Result.success(new BalanceResult(balance, timeStamp));
+            return Result.success(new Balance(balance));
         } else {
             return Result.error("Bad player id");
         }
     };
 
-    @Override
-    public Result<BalanceResult> getBalance(String playerName) {
+    /**
+     * Get the balance for the given player.
+     * @param playerName Name of the player for which the balance is returned.
+     * @return Balance for player with the given name.
+     */
+    public Result<Balance> getBalance(String playerName) {
         return webInterfaceInvoker.invoke("getBalance", balanceInvocation, playerName);
     }
 }

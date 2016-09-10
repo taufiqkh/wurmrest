@@ -4,7 +4,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.quiptiq.wurmrest.bank.BalanceResult;
+import com.quiptiq.wurmrest.bank.Balance;
 import com.quiptiq.wurmrest.rmi.RmiGameService;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -14,6 +14,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Path("/bank")
 @Produces(MediaType.APPLICATION_JSON)
 public class BankResource {
+    private static final String UNKNOWN_ERROR = "Unable to perform method call getBalance";
     private final RmiGameService service;
 
     public BankResource(RmiGameService service) {
@@ -21,7 +22,13 @@ public class BankResource {
     }
 
     @GET
-    public Result<BalanceResult> getBalance(@QueryParam("player") @NotEmpty String player) {
-        return service.getBalance(player);
+    public Balance getBalance(@QueryParam("player") @NotEmpty String player) {
+        Result<Balance> result = service.getBalance(player);
+        if (result.isError()) {
+            // We don't currently differentiate between errors
+            throw new WebApplicationException(
+                    result.getError().orElse(UNKNOWN_ERROR), Response.Status.SERVICE_UNAVAILABLE);
+        }
+        return result.getValue();
     }
 }
