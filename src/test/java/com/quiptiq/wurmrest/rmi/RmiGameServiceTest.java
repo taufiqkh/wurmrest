@@ -23,16 +23,12 @@ public class RmiGameServiceTest {
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private Optional<WebInterface> stubInterface;
 
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private Optional<WebInterface> noInterface = Optional.empty();
-
     RmiGameService service;
 
     @Before
     public void setup() throws Exception {
         webInterface = mock(WebInterface.class);
         stubInterface = Optional.of(webInterface);
-        noInterface = Optional.empty();
         provider = mock(RmiProvider.class);
         when(provider.getOrRefreshWebInterface()).thenReturn(stubInterface);
         service = new RmiGameService(provider);
@@ -44,9 +40,20 @@ public class RmiGameServiceTest {
      */
     @Test(expected = MalformedURLException.class)
     public void badUrlShouldFailFast() throws MalformedURLException {
-        reset(provider);
-        when(provider.getOrRefreshWebInterface()).thenThrow(MalformedURLException.class);
-        new RmiGameService(provider);
+        RmiProvider failProvider = mock(RmiProvider.class);
+        when(failProvider.getOrRefreshWebInterface()).thenThrow(MalformedURLException.class);
+        new RmiGameService(failProvider);
+    }
+
+    /**
+     * Failed lookup should not cause the service constructor to fail, as this error is recoverable
+     * if subsequent lookups are successful.
+     */
+    @Test
+    public void failedLookupShouldNotFailService() throws Exception {
+        RmiProvider failProvider = mock(RmiProvider.class);
+        when(failProvider.getOrRefreshWebInterface()).thenReturn(Optional.empty());
+        new RmiGameService(failProvider);
     }
 
     @Test
@@ -59,7 +66,6 @@ public class RmiGameServiceTest {
 
     /**
      * If the web interface errors and continues to error, should return error result.
-     * @throws Exception only unexpectedly
      */
     @Test
     public void shouldErrorIfWebInterfaceAlwaysErrors() throws Exception {
