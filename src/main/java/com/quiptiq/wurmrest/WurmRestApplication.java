@@ -3,6 +3,8 @@ package com.quiptiq.wurmrest;
 import javax.ws.rs.WebApplicationException;
 import java.net.MalformedURLException;
 
+import com.quiptiq.wurmrest.rmi.RmiGameService;
+import com.quiptiq.wurmrest.rmi.RmiProvider;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -19,6 +21,7 @@ public class WurmRestApplication extends Application<WurmRestConfiguration> {
     private static final int UNKNOWN_ERROR = 1;
 
     private RmiGameService wurmService;
+    private RmiProvider rmiProvider;
 
     public static void main(String[] args) {
         try {
@@ -43,10 +46,10 @@ public class WurmRestApplication extends Application<WurmRestConfiguration> {
     public void run(WurmRestConfiguration wurmRestConfiguration, Environment environment) throws
             Exception {
         try {
-            wurmService = new RmiGameService(
-                    wurmRestConfiguration.getHostName(),
+            rmiProvider = new RmiProvider(wurmRestConfiguration.getHostName(),
                     wurmRestConfiguration.getPort(),
                     wurmRestConfiguration.getRmiName());
+            wurmService = new RmiGameService(rmiProvider);
         } catch (MalformedURLException e) {
             // Can't do anything if the URL is bad
             throw new WebApplicationException("Couldn't create service", e);

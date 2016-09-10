@@ -5,6 +5,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.quiptiq.wurmrest.bank.BalanceResult;
+import com.quiptiq.wurmrest.rmi.RmiGameService;
 import org.hibernate.validator.constraints.NotEmpty;
 
 /**
@@ -20,15 +21,7 @@ public class BankResource {
     }
 
     @GET
-    public BalanceResult getBalance(@QueryParam("player") @NotEmpty String player) {
-        BalanceResult result = service.getBalance(player);
-        if (result.getErrorType() == BalanceResult.BalanceResultType.BAD_PLAYER_ID) {
-            throw new WebApplicationException(result.getError().orElse("No player found with " +
-                    "the name " + player), Response.Status.NOT_FOUND);
-        } else if (result.getErrorType() != BalanceResult.BalanceResultType.OK) {
-            throw new WebApplicationException(result.getError().orElse("Unexpected error"),
-                    Response.Status.INTERNAL_SERVER_ERROR);
-        }
-        return result;
+    public Result<BalanceResult> getBalance(@QueryParam("player") @NotEmpty String player) {
+        return service.getBalance(player);
     }
 }
