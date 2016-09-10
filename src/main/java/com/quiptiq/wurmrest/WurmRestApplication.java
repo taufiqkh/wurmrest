@@ -3,6 +3,7 @@ package com.quiptiq.wurmrest;
 import javax.ws.rs.WebApplicationException;
 import java.net.MalformedURLException;
 
+import com.quiptiq.wurmrest.resources.BankResource;
 import com.quiptiq.wurmrest.rmi.RmiGameService;
 import com.quiptiq.wurmrest.rmi.RmiProvider;
 import io.dropwizard.Application;
@@ -46,9 +47,7 @@ public class WurmRestApplication extends Application<WurmRestConfiguration> {
         RmiGameService wurmService;
 
         try {
-            rmiProvider = new RmiProvider(wurmRestConfiguration.getHostName(),
-                    wurmRestConfiguration.getPort(),
-                    wurmRestConfiguration.getRmiName());
+            rmiProvider = wurmRestConfiguration.getRmiProviderFactory().build();
             wurmService = new RmiGameService(rmiProvider);
         } catch (MalformedURLException e) {
             // Can't do anything if the URL is bad

@@ -1,3 +1,6 @@
 # Sample configuration file
-template: test
-defaultName: whatsit
+rmi:
+  hostName: localhost
+  port: 7220
+  objectName: WebInterface
+

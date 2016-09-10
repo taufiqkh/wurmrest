@@ -1,3 +1,5 @@
+package com.quiptiq.wurmrest;
+
 import com.quiptiq.wurmrest.Result;
 import org.junit.Test;
 

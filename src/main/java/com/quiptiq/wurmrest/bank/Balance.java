@@ -1,5 +1,6 @@
 package com.quiptiq.wurmrest.bank;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -8,7 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Balance {
     private final long balance;
 
-    public Balance(long balance) {
+    @JsonCreator
+    public Balance(@JsonProperty("balance") long balance) {
         this.balance = balance;
     }
 
