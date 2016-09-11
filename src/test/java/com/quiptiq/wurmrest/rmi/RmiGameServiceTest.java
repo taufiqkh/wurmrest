@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.quiptiq.wurmrest.Result;
-import com.quiptiq.wurmrest.bank.Balance;
+import com.quiptiq.wurmrest.api.Balance;
 import com.wurmonline.server.webinterface.WebInterface;
 import org.junit.Before;
 import org.junit.Test;

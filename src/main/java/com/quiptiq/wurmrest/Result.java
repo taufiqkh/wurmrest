@@ -2,7 +2,9 @@ package com.quiptiq.wurmrest;
 
 import javax.annotation.Nonnull;
 
-import java.util.Optional;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Represents the result of an RmiGameService call. A result may either be an error or a success, as
@@ -38,10 +40,12 @@ public class Result<T> {
      *
      * @return True if the result was an error, otherwise false.
      */
+    @JsonIgnore
     public boolean isError() {
         return errorMessage != null;
     }
 
+    @JsonIgnore
     public boolean isSuccess() {
         return errorMessage == null;
     }
@@ -49,12 +53,15 @@ public class Result<T> {
     /**
      * @return Error for this result. If this result is not in error, returns null.
      */
+    @JsonProperty("error")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getError() {
         return errorMessage;
     }
 
     /**
-     * @return value for this result. If this result is in error, returns null.
+     * @return value for this result. If this result is in error, returns null. Will return also
+     * return null for success if the success value was null.
      */
     public T getValue() {
         return value;

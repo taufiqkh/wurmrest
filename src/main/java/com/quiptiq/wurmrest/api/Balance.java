@@ -1,4 +1,4 @@
-package com.quiptiq.wurmrest.bank;
+package com.quiptiq.wurmrest.api;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
