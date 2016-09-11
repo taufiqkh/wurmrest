@@ -1,6 +1,8 @@
 package com.quiptiq.wurmrest.rmi;
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import com.quiptiq.wurmrest.Result;
@@ -98,4 +100,18 @@ public class RmiGameServiceTest {
         assertEquals("Should return correct balance", balance, result.getValue().getBalance());
     }
 
+    @Test
+    public void shouldAddMoney() throws Exception {
+        String playerName = "Bambam";
+        long amount = 40;
+        String transactionDetails = "Test transaction";
+        Map<String, String> wiResult = new HashMap<>();
+        String message = "Success message";
+        wiResult.put("ok", message);
+        when(webInterface.addMoneyToBank(password, playerName, amount, transactionDetails))
+                .thenReturn(wiResult);
+        Result<String> result = service.addMoney(playerName, amount, transactionDetails);
+        assertTrue("Adding money should be successful", result.isSuccess());
+        assertEquals("Should return correct message", message, result.getValue());
+    }
 }
