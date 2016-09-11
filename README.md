@@ -41,7 +41,7 @@ descriptive message that may vary depending on what error has been encountered:
 
 **Status Code:** 503
 
-**Content:**
+**Response:**
 ```json
 {
 	"code": 503,
@@ -50,6 +50,41 @@ descriptive message that may vary depending on what error has been encountered:
 ```
 
 On success, unless otherwise specified each call will return status code 200.
+
+##Server Admin
+`POST /server/broadcast`
+
+Provides general server administration capabilities
+
+
+###Announce
+Broadcasts an announcement to all players on the server
+
+**Request:**
+```
+{ message: <String message to be broadcast> }
+```
+**Response**
+```
+{ value: true }
+```
+
+###Shutdown
+Initiates server shutdown
+
+**Request:**
+```
+{
+  initiator: <String initiator of the command>,
+  timer: <Number seconds before shutdown>,
+  reason: <String reason for the shutdown, broadcast to all players>
+}
+```
+
+**Response**
+```
+{ value: true }
+```
 
 ##Bank
 This group of calls relates to bank information.
@@ -60,9 +95,9 @@ This group of calls relates to bank information.
 Retrieves the balance for the player with the name indicated by `:playerName`. On sucess, returns
  a response as follows:
 
-**Content:**
+**Response:**
 ```
-{ "balance": <number> }
+{ balance: <number> }
 ```
 
 ###Money Transaction
@@ -79,7 +114,7 @@ positive amount adds to the player's balance, while a negative subtracts.
 }
 ```
 
-**Content:**
+**Response:**
 ```
 {
   value: <String result of transaction processing>

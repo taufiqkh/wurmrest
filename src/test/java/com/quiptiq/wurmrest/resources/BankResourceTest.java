@@ -26,24 +26,15 @@ import static org.mockito.Mockito.*;
 public class BankResourceTest {
     private static final BankService testService = mock(BankService.class);
 
+    private static final ResourceTestHelper helper =
+            new ResourceTestHelper(new BankResource(testService));
+
     @ClassRule
-    public static final ResourceTestRule resources = ResourceTestRule.builder()
-            .addResource(new BankResource(testService))
-            .build();
+    public static final ResourceTestRule resources = helper.getResources();
 
     @After
     public void tearDown() {
         reset(testService);
-    }
-
-    private <R> R callGet(String path, Class<R> returnClass) {
-        return resources.client().target(path).request().get(returnClass);
-    }
-
-    private <R, T> R callPost(String path, Class<R> returnClass, T t) {
-        WebTarget target = resources.client().target(path);
-        Response response = target.request().post(Entity.json(t));
-        return response.readEntity(returnClass);
     }
 
     @Test
@@ -52,7 +43,7 @@ public class BankResourceTest {
         Balance balance = new Balance(10);
         when(testService.getBalance(playerName)).thenReturn(Result.success(balance));
         assertEquals(
-                callGet("/bank/" + playerName + "/money", Balance.class).getBalance(),
+                helper.callGet("/bank/" + playerName + "/money", Balance.class).getBalance(),
                 balance.getBalance());
     }
 
@@ -63,7 +54,7 @@ public class BankResourceTest {
         String successMessage = "Transaction successful";
         when(testService.addMoney(playerName, transaction.getAmount(), transaction.getDetails()))
                 .thenReturn(Result.success(successMessage));
-        assertEquals(callPost("/bank/" + playerName + "/money", RawResult.class, transaction)
+        assertEquals(helper.callPost("/bank/" + playerName + "/money", RawResult.class, transaction)
                         .getValue(),
                 successMessage);
     }

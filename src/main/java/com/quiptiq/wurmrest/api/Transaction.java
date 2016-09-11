@@ -1,5 +1,7 @@
 package com.quiptiq.wurmrest.api;
 
+import javax.annotation.concurrent.Immutable;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -7,6 +9,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 /**
  * Representation of a money transaction
  */
+@Immutable
 public class Transaction {
     private final long amount;
     private final String details;
