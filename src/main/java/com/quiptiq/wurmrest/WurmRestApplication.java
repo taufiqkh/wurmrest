@@ -3,6 +3,7 @@ package com.quiptiq.wurmrest;
 import javax.ws.rs.WebApplicationException;
 import java.net.MalformedURLException;
 
+import com.quiptiq.wurmrest.health.GameServiceHealthCheck;
 import com.quiptiq.wurmrest.resources.BankResource;
 import com.quiptiq.wurmrest.rmi.RmiGameService;
 import com.quiptiq.wurmrest.rmi.RmiProvider;
@@ -53,7 +54,7 @@ public class WurmRestApplication extends Application<WurmRestConfiguration> {
             throw new WebApplicationException("Couldn't create service", e);
         }
         final BankResource bank = new BankResource(gameService);
-        final WurmRestHealthCheck healthCheck = new WurmRestHealthCheck(gameService);
+        final GameServiceHealthCheck healthCheck = new GameServiceHealthCheck(gameService);
         environment.healthChecks().register("Game Service", healthCheck);
         environment.jersey().register(bank);
     }

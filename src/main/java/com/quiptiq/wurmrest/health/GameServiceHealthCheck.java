@@ -1,4 +1,4 @@
-package com.quiptiq.wurmrest;
+package com.quiptiq.wurmrest.health;
 
 import com.codahale.metrics.health.HealthCheck;
 import com.quiptiq.wurmrest.rmi.RmiGameService;
@@ -7,10 +7,10 @@ import com.quiptiq.wurmrest.rmi.RmiGameService;
  * Health check for the WurmRest application. This runs minor tests to verify that the application
  * is running correctly.
  */
-public class WurmRestHealthCheck extends HealthCheck {
+public class GameServiceHealthCheck extends HealthCheck {
     private final RmiGameService gameService;
 
-    public WurmRestHealthCheck(RmiGameService gameService) {
+    public GameServiceHealthCheck(RmiGameService gameService) {
         this.gameService = gameService;
     }
 
