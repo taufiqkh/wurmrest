@@ -34,7 +34,7 @@ the results that is returned. The use of `:variableName` in the path indicates t
  expected to be substituted. For example, when requesting the Bank balance of player 
  `Oliver`, the required path is:
  
-`/bank/Oliver/balance`
+`/bank/Oliver/money`
 
 On failure of the Wurm interface call, the interface returns the following, where `message` is a 
 descriptive message that may vary depending on what error has been encountered:

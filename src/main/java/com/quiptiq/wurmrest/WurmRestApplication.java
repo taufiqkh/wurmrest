@@ -43,17 +43,18 @@ public class WurmRestApplication extends Application<WurmRestConfiguration> {
     @Override
     public void run(WurmRestConfiguration wurmRestConfiguration, Environment environment) throws
             Exception {
-        RmiProvider rmiProvider;
+        RmiGameService gameService;
 
         try {
-            rmiProvider = wurmRestConfiguration.getRmiProviderFactory().build();
+            RmiProvider rmiProvider = wurmRestConfiguration.getRmiProviderFactory().build();
+            gameService = new RmiGameService(rmiProvider);
         } catch (MalformedURLException e) {
             // Can't do anything if the URL is bad
             throw new WebApplicationException("Couldn't create service", e);
         }
-        final BankResource bank = new BankResource(new RmiGameService(rmiProvider));
-        final WurmRestHealthCheck healthCheck = new WurmRestHealthCheck("testing");
-        environment.healthChecks().register("template", healthCheck);
+        final BankResource bank = new BankResource(gameService);
+        final WurmRestHealthCheck healthCheck = new WurmRestHealthCheck(gameService);
+        environment.healthChecks().register("Game Service", healthCheck);
         environment.jersey().register(bank);
     }
 }

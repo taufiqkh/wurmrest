@@ -1,24 +1,27 @@
 package com.quiptiq.wurmrest;
 
 import com.codahale.metrics.health.HealthCheck;
+import com.quiptiq.wurmrest.rmi.RmiGameService;
 
 /**
  * Health check for the WurmRest application. This runs minor tests to verify that the application
  * is running correctly.
  */
 public class WurmRestHealthCheck extends HealthCheck {
-    private final String template;
+    private final RmiGameService gameService;
 
-    public WurmRestHealthCheck(String template) {
-        this.template = template;
+    public WurmRestHealthCheck(RmiGameService gameService) {
+        this.gameService = gameService;
     }
 
     @Override
     protected Result check() throws Exception {
-        final String saying = String.format(template, "TEST");
-        if (!saying.contains("TEST")) {
-            return Result.unhealthy("Template doesn't include a name");
+        com.quiptiq.wurmrest.Result<Boolean> isRunning = gameService.isRunning();
+        if (isRunning.isError()) {
+            return Result.unhealthy("Error resulted when calling the Wurm service");
+        } else if (!isRunning.getValue()) {
+            return Result.unhealthy("Wurm service is not currently running");
         }
-        return Result.healthy();
+        return Result.healthy("Wurm service is currently running");
     }
 }

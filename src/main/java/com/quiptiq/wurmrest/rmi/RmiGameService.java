@@ -108,4 +108,9 @@ public class RmiGameService {
             return Result.error(ERROR_NO_EXPECTED_VALUES);
         });
     }
+
+    public Result<Boolean> isRunning() {
+        return invoke("isRunning",
+                (WebInterface webinterface) -> Result.success(webinterface.isRunning(password)));
+    }
 }

@@ -40,13 +40,7 @@ public class BankResource {
     @Path("/{player}/money")
     public Result<String> addMoney(@PathParam("player") @NotEmpty String player,
                            Transaction transaction) {
-        Result<String> result = service.addMoney(
+        return service.addMoney(
                 player, transaction.getAmount(), transaction.getDetails());
-        /*
-        if (result.isError()) {
-            throw new WebApplicationException(result.getError(), Response.Status
-                    .SERVICE_UNAVAILABLE);
-        }*/
-        return result;
     }
 }
