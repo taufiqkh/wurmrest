@@ -5,13 +5,13 @@ This process runs as a stand-alone REST server, acting as a proxy between client
 Unlimited RMI interface. It exposes a subset of the interface calls as REST endpoints, segregated
  into areas of functionality rather than having all at the top level.
 
-##Running
+#Running
 The server may be started with the following:
 
 `java -jar wurmrest-0.1-SNAPSHOT.jar server [config.yml]`
 
 where `config.yml` is an optional argument that specifies the location of a configuration file.
-##Configuration
+#Configuration
 Configuration is done through a YAML file, which is specified on the command line on startup. It 
 is of the following form:
 ```yaml
@@ -28,7 +28,7 @@ rmi:
   password: yourpassword
 ```
 
-## API
+# API
 Details of each set of API calls is below. Each entry outlines the method, path and the form of 
 the results that is returned. The use of `:variableName` in the path indicates that a variable is
  expected to be substituted. For example, when requesting the Bank balance of player 
@@ -51,10 +51,10 @@ descriptive message that may vary depending on what error has been encountered:
 
 On success, unless otherwise specified each call will return status code 200.
 
-###Bank
+##Bank
 This group of calls relates to bank information.
 
-####Balance
+###Balance
 `GET /bank/:playerName/money`
 
 Retrieves the balance for the player with the name indicated by `:playerName`. On sucess, returns
@@ -65,7 +65,7 @@ Retrieves the balance for the player with the name indicated by `:playerName`. O
 { "balance": <number> }
 ```
 
-####Money Transaction
+###Money Transaction
 `POST /bank/:playerName/money`
 
 Applies a transaction to the player's bank account, updating it with the supplied transaction. A 
