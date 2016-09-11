@@ -1,14 +1,18 @@
 package com.quiptiq.wurmrest.rmi;
 
-import javax.annotation.Nonnull;
 import java.rmi.RemoteException;
+import java.util.Optional;
 
 import com.quiptiq.wurmrest.Result;
+import com.wurmonline.server.webinterface.WebInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Calls invocations, wrapping the call in web interface refreshes.
+ * Calls invocations, wrapping the call in web interface refreshes. This means that the service
+ * can continue even if the interface is down for a period, as subsequent calls will update the
+ * interface once it comes up again. The possibility exists for a remote interface to fail between
+ * calls, however; invocations should be written with this in mind.
  */
 public class Invoker {
     private static final Logger logger = LoggerFactory.getLogger(Invoker.class);
@@ -23,59 +27,54 @@ public class Invoker {
      */
     private static final String UNABLE_TO_CALL_REMOTE = "Unable to call remote interface";
 
-    @FunctionalInterface
-    interface NoArgInvocation<R> {
-        Result<R> apply() throws RemoteException;
-    }
+    /**
+     * Error occurred attempting to invoke after a refresh of the service.
+     */
+    private static final String ERROR_INVOKING_AFTER_REFRESH =
+            "Could not invoke method again after refreshing web interface";
 
+    /**
+     * Invocation, called to execute a method on the service.
+     * @param <R> Type to be wrapped in the Result.
+     */
     @FunctionalInterface
-    interface Invocation<T, R> {
-        Result<R> apply(T t) throws RemoteException;
-    }
-
-    @FunctionalInterface
-    interface BiInvocation<T, U, R> {
-        Result<R> apply(T t, U u) throws RemoteException;
-    }
-
-    public <R> Result<R> invoke(RmiGameService service, String methodName,
-                                    NoArgInvocation<R> invocation) {
-        if (!service.verifyServiceAvailable()) {
-            return Result.error(UNABLE_TO_CREATE_STUB);
-        }
-        try {
-            return invocation.apply();
-        } catch (RemoteException e) {
-            logger.error("Could not invoke method {}", methodName);
-            logger.error("Exception encountered during invocation", e);
-            try {
-                // try again
-                if (service.verifyServiceAvailable()) {
-                    return invocation.apply();
-                }
-            } catch (RemoteException e2) {
-                logger.error("Could not invoke method again after refreshing web interface", e);
-            }
-            return Result.error(UNABLE_TO_CALL_REMOTE);
-        }
+    interface Invocation<R> {
+        Result<R> apply(WebInterface webInterface) throws RemoteException;
     }
 
     /**
-     * Invokes the method using the specified invocation function, with argument and return
-     * types. The call is wrapped in try/catch in the case of a null or invalid web interface.
-     * If an error occurs when the call is first made, the interface is refreshed and called
-     * again. If the call fails again the method returns null.
+     * Invokes the method using the specified invocation function, with Result wrapping the return
+     * type. The call is wrapped in try/catch in case of an invalid service. If an error occurs
+     * when the call is first made, the interface is refreshed and called again. If the call
+     * fails again the method returns an error Result.
      *
      * @param methodName Name of the method, for logging
      * @param invocation Invocation
-     * @param t          Argument to use
-     * @param <T>        Type of the argument
-     * @param <R>        Return type
+     * @param <R>        Return type to wrap in a Result
      * @return Successful Result if the call completed successfully, otherwise an error Result.
      */
-    @Nonnull
-    <T, R> Result<R> invoke(RmiGameService service, String methodName,
-                            Invocation<T, R> invocation, T t) {
-        return invoke(service, methodName, () -> invocation.apply(t));
+    public <R> Result<R> invoke(RmiProvider rmiProvider, String methodName,
+                                Invocation<R> invocation) {
+        Optional<WebInterface> webInterface = rmiProvider.getOrRefreshWebInterface();
+        if (webInterface.isPresent()) {
+            try {
+                return invocation.apply(webInterface.get());
+            } catch (RemoteException e) {
+                logger.error("Could not invoke method {}", methodName);
+                logger.error("Exception encountered during invocation", e);
+                try {
+                    // try again
+                    webInterface = rmiProvider.getOrRefreshWebInterface();
+                    if (webInterface.isPresent()) {
+                        return invocation.apply(webInterface.get());
+                    }
+                } catch (RemoteException e2) {
+                    logger.error(ERROR_INVOKING_AFTER_REFRESH, e);
+                }
+                return Result.error(UNABLE_TO_CALL_REMOTE);
+            }
+        } else {
+            return Result.error(UNABLE_TO_CREATE_STUB);
+        }
     }
 }

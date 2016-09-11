@@ -20,11 +20,14 @@ public class RmiGameServiceTest {
 
     private RmiGameService service;
 
+    private final String password = "password";
+
     @Before
     public void setup() throws Exception {
         webInterface = mock(WebInterface.class);
         Optional<WebInterface> stubInterface = Optional.of(webInterface);
         RmiProvider provider = mock(RmiProvider.class);
+        when(provider.getPassword()).thenReturn(password);
         when(provider.getOrRefreshWebInterface()).thenReturn(stubInterface);
         service = new RmiGameService(provider);
     }
@@ -43,7 +46,7 @@ public class RmiGameServiceTest {
     @Test
     public void shouldErrorForUnknownPlayer() throws Exception {
         String playerName = "Fred";
-        when(webInterface.getPlayerId(playerName)).thenReturn(-1L);
+        when(webInterface.getPlayerId(password, playerName)).thenReturn(-1L);
         assertTrue("Unknown player should result in error",
                 service.getBalance(playerName).isError());
     }
@@ -54,7 +57,7 @@ public class RmiGameServiceTest {
     @Test
     public void shouldErrorIfWebInterfaceAlwaysErrors() throws Exception {
         String playerName = "Wilma";
-        when(webInterface.getPlayerId(playerName)).thenThrow(RemoteException.class);
+        when(webInterface.getPlayerId(password, playerName)).thenThrow(RemoteException.class);
         Result<Balance> result = service.getBalance(playerName);
         assertTrue("Interface errors should result in error", result.isError());
     }
@@ -63,7 +66,7 @@ public class RmiGameServiceTest {
     @Test
     public void shouldRecoverIfWebInterfaceRecovers() throws Exception {
         String playerName = "Barney";
-        when(webInterface.getPlayerId(playerName))
+        when(webInterface.getPlayerId(password, playerName))
                 .thenThrow(RemoteException.class)
                 .thenReturn(-1L);
         assertTrue("Unknown player should still result in error",
@@ -71,10 +74,10 @@ public class RmiGameServiceTest {
 
         long playerId = 1;
         long balance = 42;
-        when(webInterface.getPlayerId(playerName))
+        when(webInterface.getPlayerId(password, playerName))
                 .thenThrow(RemoteException.class)
                 .thenReturn(playerId);
-        when(webInterface.getMoney(playerId, playerName)).thenReturn(balance);
+        when(webInterface.getMoney(password, playerId, playerName)).thenReturn(balance);
         Result<Balance> result = service.getBalance(playerName);
         assertTrue("Known player should still result in success",
                 result.isSuccess());
@@ -88,8 +91,8 @@ public class RmiGameServiceTest {
         String playerName = "Betty";
         long playerId = 1;
         long balance = 42;
-        when(webInterface.getPlayerId(playerName)).thenReturn(playerId);
-        when(webInterface.getMoney(playerId, playerName)).thenReturn(balance);
+        when(webInterface.getPlayerId(password, playerName)).thenReturn(playerId);
+        when(webInterface.getMoney(password, playerId, playerName)).thenReturn(balance);
         Result<Balance> result = service.getBalance(playerName);
         assertTrue("Known player with valid balance should result in success", result.isSuccess());
         assertEquals("Should return correct balance", balance, result.getValue().getBalance());

@@ -1,5 +1,7 @@
 package com.quiptiq.wurmrest.rmi;
 
+import javax.annotation.concurrent.ThreadSafe;
+import java.util.Map;
 import java.util.Optional;
 
 import com.quiptiq.wurmrest.Result;
@@ -9,10 +11,11 @@ import com.wurmonline.server.webinterface.WebInterface;
 /**
  * Provides access to the wurm service, encapsulating the calls to the game servers.
  */
+@ThreadSafe
 public class RmiGameService {
-    private WebInterface webInterface;
-
     private final RmiProvider rmiProvider;
+
+    private final String password;
 
     /**
      * Calls the web interface, wrapping each call in checks for null and attempts to get a
@@ -29,35 +32,19 @@ public class RmiGameService {
      */
     public RmiGameService(RmiProvider rmiProvider) {
         this.rmiProvider = rmiProvider;
-        Optional<WebInterface> newWebInterface = rmiProvider.getOrRefreshWebInterface();
-        if (newWebInterface.isPresent()) {
-            webInterface = newWebInterface.get();
-        }
+        this.password = rmiProvider.getPassword();
+        rmiProvider.getOrRefreshWebInterface();
     }
 
     /**
-     * Verifies that the stubbed interface has been created, attempts to create it if it has
-     * not. Returns true if the interface already exists or was created successfully,
-     * otherwise returns false.
+     * Convenience method for invoking a method on the web interface.
+     * @param methodName Name of the method, for logging
+     * @param invocation Invocation to execute
+     * @param <R> Result return type
+     * @return Result wrapping the given return type.
      */
-    boolean verifyServiceAvailable() {
-        if (webInterface == null) {
-            Optional<WebInterface> latest = rmiProvider.getOrRefreshWebInterface();
-            if (!latest.isPresent()) {
-                return false;
-            }
-            webInterface = latest.get();
-        }
-        return true;
-    }
-
-    /**
-     * Convenience method to retrieve the password, especially given that the rmiProvider referred
-     * to by lambdas may not be initialized when the lambda is created.
-     * @return Password for the RMI interface.
-     */
-    private String getPassword() {
-        return rmiProvider.getPassword();
+    private <R> Result<R> invoke(String methodName, Invoker.Invocation<R> invocation) {
+        return webInterfaceInvoker.invoke(rmiProvider, methodName, invocation);
     }
 
     /**
@@ -66,20 +53,25 @@ public class RmiGameService {
      * @return Balance for player with the given name.
      */
     public Result<Balance> getBalance(String playerName) {
-        return webInterfaceInvoker.invoke(this, "getBalance", balanceInvocation, playerName);
+        return invoke("getBalance", (WebInterface webInterface) -> {
+            long playerId = webInterface.getPlayerId(password, playerName);
+            if (playerId > 0) {
+                long balance = webInterface.getMoney(password, playerId, playerName);
+                return Result.success(new Balance(balance));
+            } else {
+                return Result.error("Bad player id");
+            }
+        });
     }
-    /**
-     * Invocation for {@link #getBalance(String)}
-     */
-    private final Invoker.Invocation<String, Balance> balanceInvocation = playerName -> {
-        String password = getPassword();
-        long playerId = webInterface.getPlayerId(password, playerName);
-        if (playerId > 0) {
-            long balance = webInterface.getMoney(password, playerId, playerName);
-            return Result.success(new Balance(balance));
-        } else {
-            return Result.error("Bad player id");
-        }
-    };
 
+    private Result<Balance> addMoney(String playerName, long amount, String transactionDetails) {
+        return invoke("addMoney", (WebInterface webInterface) -> {
+            Map<String, String> moneyDetails = webInterface.addMoneyToBank(
+                    password,
+                    playerName,
+                    amount,
+                    transactionDetails);
+            return null;
+        });
+    }
 }

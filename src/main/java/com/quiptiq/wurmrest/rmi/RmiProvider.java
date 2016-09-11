@@ -1,5 +1,7 @@
 package com.quiptiq.wurmrest.rmi;
 
+import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -12,7 +14,16 @@ import org.slf4j.LoggerFactory;
 /**
  * Provides RMI calls to the WebInterface, with refresh functionality to allow the recreation of
  * the stub.
+ *
+ * <p>
+ * <b>Implementation Note:</b>
+ * <p>
+ * While this class is thread safe, it only use a simple write lock for the volatile webInterface.
+ * This does not prevent the pathological case where several threads find a null or invalid
+ * webInterface and all attempt to refresh it at once, causing several lookups all in succession.
+ * For the expected use case this is not expected to be a major concern.
  */
+@ThreadSafe
 public class RmiProvider {
     private static final Logger logger = LoggerFactory.getLogger(RmiProvider.class);
 
@@ -29,7 +40,10 @@ public class RmiProvider {
     /**
      * RMI stub to WebInterface
      */
-    private WebInterface webInterface;
+    @GuardedBy("webInterfaceWrite")
+    private volatile WebInterface webInterface;
+
+    private final Object webInterfaceWrite = new Object();
 
     /**
      * Performs the lookup for the WebInterface.
@@ -71,15 +85,18 @@ public class RmiProvider {
      * otherwise an empty Optional.
      */
     public Optional<WebInterface> getOrRefreshWebInterface() {
-        if (webInterface == null) {
+        WebInterface latestWebInterface = webInterface;
+        if (latestWebInterface == null) {
             try {
-                webInterface = attemptLookup();
+                latestWebInterface = attemptLookup();
+                synchronized (webInterfaceWrite) {
+                    webInterface = latestWebInterface ;
+                }
             } catch (MalformedURLException e) {
                 logger.error("URL Exception was not caught on initialisation", e);
-                return null;
             }
         }
-        return Optional.ofNullable(webInterface);
+        return Optional.ofNullable(latestWebInterface );
     }
 
     /**
