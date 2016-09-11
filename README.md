@@ -49,18 +49,39 @@ descriptive message that may vary depending on what error has been encountered:
 }
 ```
 
+On success, unless otherwise specified each call will return status code 200.
+
 ###Bank
 This group of calls relates to bank information.
 
 ####Balance
-`GET /bank/:playerName/balance`
+`GET /bank/:playerName/money`
 
 Retrieves the balance for the player with the name indicated by `:playerName`. On sucess, returns
  a response as follows:
 
-**Status Code:** 200
-
 **Content:**
 ```
 { "balance": <number> }
+```
+
+####Money Transaction
+`POST /bank/:playerName/money`
+
+Applies a transaction to the player's bank account, updating it with the supplied transaction. A 
+positive amount adds to the player's balance, while a negative subtracts.
+
+**Request**
+```
+{
+  amount: <number>,
+  details: <String description of transaction>
+}
+```
+
+**Content:**
+```
+{
+  value: <String result of transaction processing>
+}
 ```
