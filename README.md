@@ -52,19 +52,16 @@ descriptive message that may vary depending on what error has been encountered:
 On success, unless otherwise specified each call will return status code 200.
 
 ##Server Admin
-`POST /server/broadcast`
-
 Provides general server administration capabilities
-
 
 ###Announce
 Broadcasts an announcement to all players on the server
 
-**Request:**
+**Request:** `POST /server/broadcast`
 ```
 { message: <String message to be broadcast> }
 ```
-**Response**
+**Response:**
 ```
 { value: true }
 ```
@@ -72,7 +69,8 @@ Broadcasts an announcement to all players on the server
 ###Shutdown
 Initiates server shutdown
 
-**Request:**
+**Request:** `POST /server/shutdown`
+
 ```
 {
   initiator: <String initiator of the command>,
@@ -81,7 +79,7 @@ Initiates server shutdown
 }
 ```
 
-**Response**
+**Response:**
 ```
 { value: true }
 ```
@@ -90,10 +88,10 @@ Initiates server shutdown
 This group of calls relates to bank information.
 
 ###Balance
-`GET /bank/:playerName/money`
-
 Retrieves the balance for the player with the name indicated by `:playerName`. On sucess, returns
  a response as follows:
+
+**Request:** `GET /bank/:playerName/money`
 
 **Response:**
 ```
@@ -101,12 +99,10 @@ Retrieves the balance for the player with the name indicated by `:playerName`. O
 ```
 
 ###Money Transaction
-`POST /bank/:playerName/money`
-
 Applies a transaction to the player's bank account, updating it with the supplied transaction. A 
 positive amount adds to the player's balance, while a negative subtracts.
 
-**Request**
+**Request:** `POST /bank/:playerName/money`
 ```
 {
   amount: <number>,
