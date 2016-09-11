@@ -17,10 +17,10 @@ import static org.mockito.Mockito.*;
 /**
  * Tests the RMI game service calls by providing a stub WebInterface.
  */
-public class RmiGameServiceTest {
+public class BankServiceTest {
     private WebInterface webInterface;
 
-    private RmiGameService service;
+    private BankService service;
 
     private final String password = "password";
 
@@ -31,7 +31,7 @@ public class RmiGameServiceTest {
         RmiProvider provider = mock(RmiProvider.class);
         when(provider.getPassword()).thenReturn(password);
         when(provider.getOrRefreshWebInterface()).thenReturn(stubInterface);
-        service = new RmiGameService(provider);
+        service = new BankService(provider);
     }
 
     /**

@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 
 import com.quiptiq.wurmrest.health.GameServiceHealthCheck;
 import com.quiptiq.wurmrest.resources.BankResource;
+import com.quiptiq.wurmrest.rmi.BankService;
 import com.quiptiq.wurmrest.rmi.RmiGameService;
 import com.quiptiq.wurmrest.rmi.RmiProvider;
 import io.dropwizard.Application;
@@ -44,17 +45,16 @@ public class WurmRestApplication extends Application<WurmRestConfiguration> {
     @Override
     public void run(WurmRestConfiguration wurmRestConfiguration, Environment environment) throws
             Exception {
-        RmiGameService gameService;
-
+        RmiProvider rmiProvider;
         try {
-            RmiProvider rmiProvider = wurmRestConfiguration.getRmiProviderFactory().build();
-            gameService = new RmiGameService(rmiProvider);
+            rmiProvider = wurmRestConfiguration.getRmiProviderFactory().build();
         } catch (MalformedURLException e) {
             // Can't do anything if the URL is bad
             throw new WebApplicationException("Couldn't create service", e);
         }
-        final BankResource bank = new BankResource(gameService);
-        final GameServiceHealthCheck healthCheck = new GameServiceHealthCheck(gameService);
+        final BankResource bank = new BankResource(new BankService(rmiProvider));
+        final GameServiceHealthCheck healthCheck =
+                new GameServiceHealthCheck(new RmiGameService(rmiProvider));
         environment.healthChecks().register("Game Service", healthCheck);
         environment.jersey().register(bank);
     }

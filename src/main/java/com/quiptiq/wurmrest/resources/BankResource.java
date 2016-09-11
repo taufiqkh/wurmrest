@@ -8,6 +8,7 @@ import javax.ws.rs.core.Response;
 import com.quiptiq.wurmrest.Result;
 import com.quiptiq.wurmrest.api.Balance;
 import com.quiptiq.wurmrest.api.Transaction;
+import com.quiptiq.wurmrest.rmi.BankService;
 import com.quiptiq.wurmrest.rmi.RmiGameService;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -18,9 +19,9 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class BankResource {
-    private final RmiGameService service;
+    private final BankService service;
 
-    public BankResource(RmiGameService service) {
+    public BankResource(BankService service) {
         this.service = service;
     }
 

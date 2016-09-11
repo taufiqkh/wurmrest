@@ -10,6 +10,7 @@ import com.quiptiq.wurmrest.RawResult;
 import com.quiptiq.wurmrest.Result;
 import com.quiptiq.wurmrest.api.Balance;
 import com.quiptiq.wurmrest.api.Transaction;
+import com.quiptiq.wurmrest.rmi.BankService;
 import com.quiptiq.wurmrest.rmi.RmiGameService;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.After;
@@ -23,7 +24,7 @@ import static org.mockito.Mockito.*;
  * Tests for the /bank resource
  */
 public class BankResourceTest {
-    private static final RmiGameService testService = mock(RmiGameService.class);
+    private static final BankService testService = mock(BankService.class);
 
     @ClassRule
     public static final ResourceTestRule resources = ResourceTestRule.builder()
