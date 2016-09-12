@@ -30,9 +30,8 @@ public class BankResource {
     public Balance getBalance(@PathParam("player") @NotEmpty String player) {
         Result<Balance> result = service.getBalance(player);
         if (result.isError()) {
-            // We don't currently differentiate between errors
             throw new WebApplicationException(
-                    result.getError(), Response.Status.SERVICE_UNAVAILABLE);
+                    result.getError(), Response.Status.BAD_REQUEST);
         }
         return result.getValue();
     }
@@ -41,7 +40,12 @@ public class BankResource {
     @Path("/{player}/money")
     public Result<String> addMoney(@PathParam("player") @NotEmpty String player,
                            Transaction transaction) {
-        return service.addMoney(
+        Result<String> result = service.addMoney(
                 player, transaction.getAmount(), transaction.getDetails());
+        if (result.isError()) {
+            throw new WebApplicationException(
+                    result.getError(), Response.Status.BAD_REQUEST);
+        }
+        return result;
     }
 }

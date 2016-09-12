@@ -62,17 +62,15 @@ the results that is returned. The use of `:variableName` in the path indicates t
 On failure of the Wurm interface call, the interface returns the following, where `message` is a 
 descriptive message that may vary depending on what error has been encountered:
 
-**Status Code:** 503
+**Status Code:** `504 GATEWAY_TIMEOUT`
 
 **Response:**
 ```json
 {
-	"code": 503,
+	"code": 504,
 	"message": "Could not create stub for web interface"
 }
 ```
-
-On success, unless otherwise specified each call will return status code 200.
 
 ##Server Admin
 Provides general server administration capabilities
@@ -84,7 +82,7 @@ Broadcasts an announcement to all players on the server
 ```
 { message: <String message to be broadcast> }
 ```
-**Response:**
+**Response:** `200 OK`
 ```
 { value: true }
 ```
@@ -102,7 +100,7 @@ Initiates server shutdown
 }
 ```
 
-**Response:**
+**Response:** `200 OK`
 ```
 { value: true }
 ```
@@ -116,11 +114,21 @@ Retrieves the balance for the player with the name indicated by `:playerName`. O
 
 **Request:** `GET /bank/:playerName/money`
 
-**Response:**
+**Response:** `200 OK`
 ```
 { balance: <number> }
 ```
 
+If the player is not present, will return an error response:
+
+**Response:** `400 Bad Request`
+
+```
+{
+    code: 400,
+    message: <String describing the error>
+}
+```
 ###Money Transaction
 Applies a transaction to the player's bank account, updating it with the supplied transaction. A 
 positive amount adds to the player's balance, while a negative subtracts.
@@ -133,7 +141,7 @@ positive amount adds to the player's balance, while a negative subtracts.
 }
 ```
 
-**Response:**
+**Response:** `200 OK`
 ```
 {
   value: <String result of transaction processing>

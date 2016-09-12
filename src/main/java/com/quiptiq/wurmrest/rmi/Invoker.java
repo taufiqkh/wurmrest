@@ -1,5 +1,7 @@
 package com.quiptiq.wurmrest.rmi;
 
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import java.rmi.RemoteException;
 import java.util.Optional;
 
@@ -71,10 +73,11 @@ public class Invoker {
                 } catch (RemoteException e2) {
                     logger.error(ERROR_INVOKING_AFTER_REFRESH, e);
                 }
-                return Result.error(UNABLE_TO_CALL_REMOTE);
+                throw new WebApplicationException(
+                        UNABLE_TO_CALL_REMOTE, Response.Status.GATEWAY_TIMEOUT);
             }
         } else {
-            return Result.error(UNABLE_TO_CREATE_STUB);
+            throw new WebApplicationException(UNABLE_TO_CREATE_STUB, Response.Status.GATEWAY_TIMEOUT);
         }
     }
 }

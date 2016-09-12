@@ -1,5 +1,6 @@
 package com.quiptiq.wurmrest.rmi;
 
+import javax.ws.rs.WebApplicationException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,12 +57,11 @@ public class BankServiceTest {
     /**
      * If the web interface errors and continues to error, should return error result.
      */
-    @Test
+    @Test(expected = WebApplicationException.class)
     public void shouldErrorIfWebInterfaceAlwaysErrors() throws Exception {
         String playerName = "Wilma";
         when(webInterface.getPlayerId(password, playerName)).thenThrow(RemoteException.class);
-        Result<Balance> result = service.getBalance(playerName);
-        assertTrue("Interface errors should result in error", result.isError());
+        service.getBalance(playerName);
     }
 
 
