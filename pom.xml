@@ -18,12 +18,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.wurmonline</groupId>
+            <groupId>com.wurmunlimited</groupId>
             <artifactId>WurmCommon</artifactId>
             <version>${wurm.build.id}</version>
         </dependency>
         <dependency>
-            <groupId>com.wurmonline</groupId>
+            <groupId>com.wurmunlimited</groupId>
             <artifactId>WurmServer</artifactId>
             <version>${wurm.build.id}</version>
         </dependency>

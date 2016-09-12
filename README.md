@@ -5,8 +5,31 @@ This process runs as a stand-alone REST server, acting as a proxy between client
 Unlimited RMI interface. It exposes a subset of the interface calls as REST endpoints, segregated
  into areas of functionality rather than having all at the top level.
 
+#Building
+Wurmrest requires an installed version of Wurm Unlimited or the Wurm Unlimited Dedicated Server. 
+From this installation the following files will need to be installed as 
+maven dependencies:
+- common.jar
+- server.jar
+- lib/controlsfx-8.20.8.jar
+- lib/jtwitter.jar
+- lib/mail.jar
+
+For convenience, on Windows you can use the `mvninstall.bat` script, found in the `scripts`
+directory of this repository and executed as follows:
+
+`mvninstall.bat <WU build id> [<steam directory>]`
+
+eg.:
+
+`mvninstall.bat 1266498 "c:\Program Files (x86)\Steam"`
+
+Wurmrest can then be built and packaged as an uberjar:
+
+`mvn package`
+
 #Running
-The server may be started with the following:
+Once built, the server may be started with the following:
 
 `java -jar wurmrest-0.1-SNAPSHOT.jar server [config.yml]`
 
