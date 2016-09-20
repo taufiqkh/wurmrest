@@ -76,6 +76,43 @@
                     <target>${wurm.java.version}</target>
                 </configuration>
             </plugin>
+            <!-- Autogenerate swagger docs -->
+            <plugin>
+                <groupId>com.github.kongchen</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <version>3.1.4</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <apiSources>
+                        <apiSource>
+                            <springmvc>false</springmvc>
+                            <locations>
+                                <location>com.quiptiq.wurmrest.resources</location>
+                            </locations>
+                            <info>
+                                <title>Wurm REST API</title>
+                                <description>RESTful API for the Wurm Server</description>
+                                <license>
+                                    <name>Apache 2.0</name>
+                                    <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+                                </license>
+                                <version>${project.version}</version>
+                            </info>
+                            <templatePath>${basedir}/src/main/hbs/strapdown.html.hbs</templatePath>
+                            <outputPath>${project.build.directory}/generated/wurmrest.html</outputPath>
+                            <swaggerDirectory>${project.build.directory}/generated/swagger-ui</swaggerDirectory>
+                            <attachSwaggerArtifact>true</attachSwaggerArtifact>
+                        </apiSource>
+                    </apiSources>
+                </configuration>
+            </plugin>
             <!-- Include artifact version -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
