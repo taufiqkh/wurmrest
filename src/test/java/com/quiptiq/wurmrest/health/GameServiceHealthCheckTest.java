@@ -13,7 +13,7 @@ import static org.mockito.Mockito.*;
  * Tests the game service health check
  */
 public class GameServiceHealthCheckTest {
-    RmiGameService mockService;
+    private RmiGameService mockService;
 
     @Before
     public void setUp() {

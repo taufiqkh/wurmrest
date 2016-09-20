@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 import com.quiptiq.wurmrest.rmi.RmiProviderFactory;
 import io.dropwizard.Configuration;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
 import org.hibernate.validator.constraints.NotEmpty;
 
 
@@ -29,4 +30,6 @@ public class WurmRestConfiguration extends Configuration {
         return rmiProviderFactory;
     }
 
+    @JsonProperty("swagger")
+    public SwaggerBundleConfiguration swaggerBundleConfiguration;
 }

@@ -11,4 +11,5 @@ rmi:
   objectName: WebInterface
   # Password to use when making RMI calls
   password: yourpassword
-
+swagger:
+  resourcePackage: com.quiptiq.wurmrest.resources

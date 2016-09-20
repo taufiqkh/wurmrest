@@ -14,6 +14,9 @@ import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
+import io.federecio.dropwizard.swagger.SwaggerBundle;
+import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
+import io.swagger.jaxrs.listing.ApiListingResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +44,13 @@ public class WurmRestApplication extends Application<WurmRestConfiguration> {
 
     @Override
     public void initialize(Bootstrap<WurmRestConfiguration> bootstrap) {
-
+        bootstrap.addBundle(new SwaggerBundle<WurmRestConfiguration>() {
+            @Override
+            protected SwaggerBundleConfiguration getSwaggerBundleConfiguration
+                    (WurmRestConfiguration configuration) {
+                return configuration.swaggerBundleConfiguration;
+            }
+        });
     }
 
     @Override

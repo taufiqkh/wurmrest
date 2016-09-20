@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * interface once it comes up again. The possibility exists for a remote interface to fail between
  * calls, however; invocations should be written with this in mind.
  */
-public class Invoker {
+class Invoker {
     private static final Logger logger = LoggerFactory.getLogger(Invoker.class);
 
     /**
