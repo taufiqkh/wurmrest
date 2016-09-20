@@ -57,7 +57,7 @@ the results that is returned. The use of `:variableName` in the path indicates t
  expected to be substituted. For example, when requesting the Bank balance of player 
  `Oliver`, the required path is:
  
-`/bank/Oliver/money`
+`/bank/players/Oliver/money`
 
 On failure of the Wurm interface call, the interface returns the following, where `message` is a 
 descriptive message that may vary depending on what error has been encountered:
@@ -112,7 +112,7 @@ This group of calls relates to bank information.
 Retrieves the balance for the player with the name indicated by `:playerName`. On sucess, returns
  a response as follows:
 
-**Request:** `GET /bank/:playerName/money`
+**Request:** `GET /bank/players/:playerName/money`
 
 **Response:** `200 OK`
 ```
@@ -133,7 +133,7 @@ If the player is not present, will return an error response:
 Applies a transaction to the player's bank account, updating it with the supplied transaction. A 
 positive amount adds to the player's balance, while a negative subtracts.
 
-**Request:** `POST /bank/:playerName/money`
+**Request:** `POST /bank/players/:playerName/money`
 ```
 {
   amount: <number>,
