@@ -1,19 +1,17 @@
 package com.quiptiq.wurmrest.resources;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-import java.util.HashMap;
-import java.util.Map;
+import javax.ws.rs.core.GenericType;
 
-import com.quiptiq.wurmrest.RawResult;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.quiptiq.wurmrest.Result;
+import com.quiptiq.wurmrest.ResultDeserializer;
 import com.quiptiq.wurmrest.api.Balance;
 import com.quiptiq.wurmrest.api.Transaction;
 import com.quiptiq.wurmrest.rmi.BankService;
-import com.quiptiq.wurmrest.rmi.RmiGameService;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -31,6 +29,13 @@ public class BankResourceTest {
 
     @ClassRule
     public static final ResourceTestRule resources = helper.getResources();
+
+    @Before
+    public void setUp() {
+        SimpleModule module = new SimpleModule().addDeserializer(Result.class, new ResultDeserializer());
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(module);
+    }
 
     @After
     public void tearDown() {
@@ -54,8 +59,12 @@ public class BankResourceTest {
         String successMessage = "Transaction successful";
         when(testService.addMoney(playerName, transaction.getAmount(), transaction.getDetails()))
                 .thenReturn(Result.success(successMessage));
-        assertEquals(helper.callPost("/bank/" + playerName + "/money", RawResult.class, transaction)
-                        .getValue(),
+        assertEquals(
+                helper.callPost(
+                        "/bank/" + playerName + "/money",
+                        new GenericType<Result<String>>() {},
+                        transaction
+                ).getValue(),
                 successMessage);
     }
 }

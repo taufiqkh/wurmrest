@@ -1,6 +1,7 @@
 package com.quiptiq.wurmrest.resources;
 
-import com.quiptiq.wurmrest.RawResult;
+import javax.ws.rs.core.GenericType;
+
 import com.quiptiq.wurmrest.Result;
 import com.quiptiq.wurmrest.api.Announcement;
 import com.quiptiq.wurmrest.api.ShutdownCommand;
@@ -34,9 +35,12 @@ public class ServerResourceTest {
     public void announce() {
         Announcement announcement = new Announcement("Test announcement");
         when(testService.broadcast(announcement.getMessage())).thenReturn(Result.success(true));
-        RawResult result = helper.callPost("/server/broadcast", RawResult.class, announcement);
+        Result<Boolean> result = helper.callPost(
+                "/server/broadcast",
+                new GenericType<Result<Boolean>>(){},
+                announcement);
         assertNull(result.getError());
-        assertTrue((Boolean) result.getValue());
+        assertTrue(result.getValue());
     }
 
     @Test
@@ -49,8 +53,11 @@ public class ServerResourceTest {
                         command.getReason()))
                 .thenReturn(Result.success(true));
 
-        RawResult result = helper.callPost("/server/shutdown", RawResult.class, command);
+        Result<Boolean> result = helper.callPost(
+                "/server/shutdown",
+                new GenericType<Result<Boolean>>(){},
+                command);
         assertNull(result.getError());
-        assertTrue((Boolean) result.getValue());
+        assertTrue(result.getValue());
     }
 }
