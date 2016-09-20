@@ -48,7 +48,8 @@ public class BankResourceTest {
         Balance balance = new Balance(10);
         when(testService.getBalance(playerName)).thenReturn(Result.success(balance));
         assertEquals(
-                helper.callGet("/bank/" + playerName + "/money", Balance.class).getBalance(),
+                helper.callGet("/bank/players/" + playerName + "/money", Balance.class)
+                        .getBalance(),
                 balance.getBalance());
     }
 
@@ -61,7 +62,7 @@ public class BankResourceTest {
                 .thenReturn(Result.success(successMessage));
         assertEquals(
                 helper.callPost(
-                        "/bank/" + playerName + "/money",
+                        "/bank/players/" + playerName + "/money",
                         new GenericType<Result<String>>() {},
                         transaction
                 ).getValue(),

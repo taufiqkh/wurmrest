@@ -30,7 +30,7 @@ public class BankResource {
     }
 
     @GET
-    @Path("/{player}/money")
+    @Path("/players/{player}/money")
     @ApiOperation(
             value = "Retrieve the value for a player",
             notes = "Returns an error if the player cannot be found",
@@ -47,7 +47,7 @@ public class BankResource {
     }
 
     @POST
-    @Path("/{player}/money")
+    @Path("/players/{player}/money")
     @ApiOperation(
             value = "Add money to or remove money from a player's bank account",
             notes = "Returns a message indicating the result of the transaction",
