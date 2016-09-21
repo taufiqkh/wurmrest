@@ -385,14 +385,14 @@ Returns a result with a boolean with value true if the initiation of the shutdow
 
 
 
-## /server/status/running
+## /server/status
 
 
 ### GET
 
-<a id="isRunning">Whether or not the service is running</a>
+<a id="getStatus">Current status of the server</a>
 
-Determines whether or not the game service is running and returns a result with a boolean value
+Determines whether or not the game service is contactable and is running and returns this status with a time stamp of the status check. If the server cannot be contacted, isRunning is null.
 
 
 
@@ -419,7 +419,7 @@ Determines whether or not the game service is running and returns a result with 
 
 | Status Code | Reason      | Response Model |
 |-------------|-------------|----------------|
-| 200    | successful operation | <a href="#/definitions/Result">Result</a>|
+| 200    | successful operation | <a href="#/definitions/ServerStatus">ServerStatus</a>|
 
 
 
@@ -536,6 +536,58 @@ Determines whether or not the game service is running and returns a result with 
                 
                     
                     string
+                
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+    
+</table>
+
+## <a name="/definitions/ServerStatus">ServerStatus</a>
+
+<table border="1">
+    <tr>
+        <th>name</th>
+        <th>type</th>
+        <th>required</th>
+        <th>description</th>
+        <th>example</th>
+    </tr>
+    
+        <tr>
+            <td>isRunning</td>
+            <td>
+                
+                    
+                    boolean
+                
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+    
+        <tr>
+            <td>timeStamp</td>
+            <td>
+                
+                    
+                    string (date-time)
+                
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+    
+        <tr>
+            <td>connectable</td>
+            <td>
+                
+                    
+                    boolean
                 
             </td>
             <td>optional</td>

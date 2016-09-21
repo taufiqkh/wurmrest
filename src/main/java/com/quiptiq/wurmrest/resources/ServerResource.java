@@ -3,11 +3,15 @@ package com.quiptiq.wurmrest.resources;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
+import java.time.LocalDateTime;
+
 import com.quiptiq.wurmrest.Result;
 import com.quiptiq.wurmrest.api.Announcement;
+import com.quiptiq.wurmrest.api.ServerStatus;
 import com.quiptiq.wurmrest.api.ShutdownCommand;
 import com.quiptiq.wurmrest.rmi.AdminService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 
@@ -28,15 +32,25 @@ public class ServerResource implements Resource {
     }
 
     @GET
-    @Path("/status/running")
+    @Path("/status")
     @ApiOperation(
-            value = "Whether or not the service is running",
-            notes = "Determines whether or not the game service is running and returns a result" +
-                    " with a boolean value",
-            response = Result.class
+            value = "Current status of the server",
+            notes = "Determines whether or not the game service is contactable and is running and" +
+                    " returns this status with a time stamp of the status check. If the server " +
+                    "cannot be contacted, isRunning is null.",
+            response = ServerStatus.class
     )
-    public Result<Boolean> isRunning() {
-        return service.isRunning();
+    public ServerStatus getStatus() {
+        LocalDateTime asAt = LocalDateTime.now();
+        try {
+            Result<Boolean> result = service.isRunning();
+            if (result.isSuccess()) {
+                return new ServerStatus(result.getValue(), false, asAt);
+            }
+        } catch (WebApplicationException e) {
+            // Do nothing, return null for isRunning and false for connected
+        }
+        return new ServerStatus(null, false, asAt);
     }
 
     @POST
@@ -47,6 +61,7 @@ public class ServerResource implements Resource {
                     "successful, otherwise an error",
             response = Result.class
     )
+    @ApiImplicitParam(name = "message", value = "Message to be broadcast")
     public Result<Boolean> announce(Announcement message) {
         return service.broadcast(message.getMessage());
     }
