@@ -1,0 +1,5 @@
+<configuration>
+    <!-- Disable logging as we test for expected errors. This shouldn't suppress output of
+         unexpected errors -->
+    <root level="OFF"/>
+</configuration>
