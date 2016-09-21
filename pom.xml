@@ -106,7 +106,7 @@
                                 <version>${project.version}</version>
                             </info>
                             <templatePath>${basedir}/src/main/hbs/strapdown.html.hbs</templatePath>
-                            <outputPath>${project.build.directory}/generated/wurmrest.html</outputPath>
+                            <outputPath>${basedir}/docs/index.html</outputPath>
                             <swaggerDirectory>${project.build.directory}/generated/swagger-ui</swaggerDirectory>
                             <attachSwaggerArtifact>true</attachSwaggerArtifact>
                         </apiSource>
