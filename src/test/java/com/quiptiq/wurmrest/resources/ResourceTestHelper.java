@@ -6,8 +6,11 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.quiptiq.wurmrest.Result;
 import com.quiptiq.wurmrest.ResultDeserializer;
 import io.dropwizard.testing.junit.ResourceTestRule;
@@ -21,7 +24,12 @@ class ResourceTestHelper {
     ResourceTestHelper(Resource resource) {
         SimpleModule module = new SimpleModule().addDeserializer(Result.class,
                 new ResultDeserializer());
-        ObjectMapper mapper = new ObjectMapper().registerModule(module);
+        ObjectMapper mapper = new ObjectMapper()
+                .registerModule(module)
+                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+                .configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE, false)
+                .registerModule(new JavaTimeModule());
+
         resources = ResourceTestRule.builder()
                 .setMapper(mapper)
                 .addResource(resource)

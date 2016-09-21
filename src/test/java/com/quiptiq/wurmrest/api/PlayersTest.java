@@ -22,7 +22,7 @@ public class PlayersTest {
     }
 
     @Test
-    public void serializesToJson() throws Exception {
+    public void serialiseToJson() throws Exception {
         final ArrayList<String> names = new ArrayList<>();
         names.add("Tom");
         names.add("Dave");
@@ -33,7 +33,7 @@ public class PlayersTest {
     }
 
     @Test
-    public void serializesCountOnlyToJson() throws Exception {
+    public void serialisesCountOnlyToJson() throws Exception {
         final Players players = new Players(20);
         final String expected = MAPPER.writeValueAsString(
                 MAPPER.readValue("{\"count\":20}", Players.class));
@@ -41,7 +41,7 @@ public class PlayersTest {
     }
 
     @Test
-    public void serializesEmptyNames() throws Exception {
+    public void serialisesEmptyNames() throws Exception {
         final Players players = new Players(new ArrayList<>());
         final String expected = MAPPER.writeValueAsString(
                 MAPPER.readValue(jsonFixture("playersEmpty"), Players.class));
@@ -49,7 +49,7 @@ public class PlayersTest {
     }
 
     @Test
-    public void deserializesFromJson() throws Exception {
+    public void deserialisesFromJson() throws Exception {
         ArrayList<String> names = new ArrayList<>();
         names.add("Tom");
         names.add("Dave");
@@ -60,7 +60,7 @@ public class PlayersTest {
     }
 
     @Test
-    public void deserializesCountOnlyFromJson() throws Exception {
+    public void deserialisesCountOnlyFromJson() throws Exception {
         final Players expectedPlayers = new Players(10);
         Players players = MAPPER.readValue("{\"count\":10}", Players.class);
         assertEquals(expectedPlayers.getCount(), players.getCount());
@@ -68,7 +68,7 @@ public class PlayersTest {
     }
 
     @Test
-    public void deserializesEmptyNames() throws Exception {
+    public void deserialisesEmptyNames() throws Exception {
         final Players expectedPlayers = new Players(new ArrayList<>());
         Players players = MAPPER.readValue(jsonFixture("playersEmpty"), Players.class);
         assertEquals(expectedPlayers.getCount(), players.getCount());

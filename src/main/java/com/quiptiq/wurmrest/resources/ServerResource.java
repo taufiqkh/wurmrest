@@ -3,7 +3,7 @@ package com.quiptiq.wurmrest.resources;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import com.quiptiq.wurmrest.Result;
 import com.quiptiq.wurmrest.api.Announcement;
@@ -13,7 +13,6 @@ import com.quiptiq.wurmrest.rmi.AdminService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
 
 /**
  * Exposes general server administration functions
@@ -41,7 +40,7 @@ public class ServerResource implements Resource {
             response = ServerStatus.class
     )
     public ServerStatus getStatus() {
-        LocalDateTime asAt = LocalDateTime.now();
+        ZonedDateTime asAt = ZonedDateTime.now();
         try {
             Result<Boolean> result = service.isRunning();
             if (result.isSuccess()) {

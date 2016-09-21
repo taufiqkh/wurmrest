@@ -4,6 +4,7 @@ import javax.ws.rs.core.GenericType;
 
 import com.quiptiq.wurmrest.Result;
 import com.quiptiq.wurmrest.api.Announcement;
+import com.quiptiq.wurmrest.api.ServerStatus;
 import com.quiptiq.wurmrest.api.ShutdownCommand;
 import com.quiptiq.wurmrest.rmi.AdminService;
 import io.dropwizard.testing.junit.ResourceTestRule;
@@ -29,6 +30,12 @@ public class ServerResourceTest {
     @After
     public void tearDown() {
         reset(testService);
+    }
+
+    @Test
+    public void runningStatus() {
+        when(testService.isRunning()).thenReturn(Result.success(true));
+        ServerStatus status = helper.callGet("/server/status", ServerStatus.class);
     }
 
     @Test

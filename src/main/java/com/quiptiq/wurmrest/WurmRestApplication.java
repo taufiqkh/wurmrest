@@ -3,6 +3,9 @@ package com.quiptiq.wurmrest;
 import javax.ws.rs.WebApplicationException;
 import java.net.MalformedURLException;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.quiptiq.wurmrest.health.GameServiceHealthCheck;
 import com.quiptiq.wurmrest.resources.PlayerResource;
 import com.quiptiq.wurmrest.resources.ServerResource;
@@ -64,6 +67,11 @@ public class WurmRestApplication extends Application<WurmRestConfiguration> {
 
         final ServerResource server = new ServerResource(new AdminService(rmiProvider));
         environment.jersey().register(server);
+        // Serialization/Deserialization of dates and times as ISO8601 with time zones
+        environment.getObjectMapper()
+                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+                .configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE, false)
+                .registerModule(new JavaTimeModule());
 
         final GameServiceHealthCheck healthCheck =
                 new GameServiceHealthCheck(new RmiGameService(rmiProvider));
