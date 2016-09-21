@@ -32,9 +32,6 @@ public class BankResourceTest {
 
     @Before
     public void setUp() {
-        SimpleModule module = new SimpleModule().addDeserializer(Result.class, new ResultDeserializer());
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(module);
     }
 
     @After

@@ -22,12 +22,9 @@ public class AdminServiceTest {
 
     @Before
     public void setUp() {
-        webInterface = mock(WebInterface.class);
-        Optional<WebInterface> stubInterface = Optional.of(webInterface);
-        RmiProvider provider = mock(RmiProvider.class);
-        when(provider.getPassword()).thenReturn(password);
-        when(provider.getOrRefreshWebInterface()).thenReturn(stubInterface);
-        service = new AdminService(provider);
+        RmiServiceTestHelper helper = new RmiServiceTestHelper(password);
+        webInterface = helper.getWebInterface();
+        service = new AdminService(helper.getRmiProvider());
     }
 
     @Test

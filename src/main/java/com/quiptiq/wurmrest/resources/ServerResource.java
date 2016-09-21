@@ -18,7 +18,7 @@ import io.swagger.annotations.ApiResponse;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = ServerResource.PATH, description = "General server administration functions")
-public class ServerResource {
+public class ServerResource implements Resource {
     static final String PATH = "/server";
 
     private final AdminService service;

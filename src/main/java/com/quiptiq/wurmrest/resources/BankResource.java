@@ -20,7 +20,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = BankResource.PATH, description="Financial services for all players and server accounts")
-public class BankResource {
+public class BankResource implements Resource {
     static final String PATH = "/bank";
 
     private final BankService service;

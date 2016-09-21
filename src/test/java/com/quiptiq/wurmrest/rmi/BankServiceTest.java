@@ -27,12 +27,9 @@ public class BankServiceTest {
 
     @Before
     public void setup() throws Exception {
-        webInterface = mock(WebInterface.class);
-        Optional<WebInterface> stubInterface = Optional.of(webInterface);
-        RmiProvider provider = mock(RmiProvider.class);
-        when(provider.getPassword()).thenReturn(password);
-        when(provider.getOrRefreshWebInterface()).thenReturn(stubInterface);
-        service = new BankService(provider);
+        RmiServiceTestHelper helper = new RmiServiceTestHelper(password);
+        webInterface = helper.getWebInterface();
+        service = new BankService(helper.getRmiProvider());
     }
 
     /**
