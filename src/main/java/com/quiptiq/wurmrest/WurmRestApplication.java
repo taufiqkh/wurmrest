@@ -4,19 +4,15 @@ import javax.ws.rs.WebApplicationException;
 import java.net.MalformedURLException;
 
 import com.quiptiq.wurmrest.health.GameServiceHealthCheck;
-import com.quiptiq.wurmrest.resources.BankResource;
+import com.quiptiq.wurmrest.resources.PlayerResource;
 import com.quiptiq.wurmrest.resources.ServerResource;
-import com.quiptiq.wurmrest.rmi.AdminService;
-import com.quiptiq.wurmrest.rmi.BankService;
-import com.quiptiq.wurmrest.rmi.RmiGameService;
-import com.quiptiq.wurmrest.rmi.RmiProvider;
+import com.quiptiq.wurmrest.rmi.*;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
 import io.federecio.dropwizard.swagger.SwaggerBundle;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
-import io.swagger.jaxrs.listing.ApiListingResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,8 +59,8 @@ public class WurmRestApplication extends Application<WurmRestConfiguration> {
             // Can't do anything if the URL is bad
             throw new WebApplicationException("Couldn't create service", e);
         }
-        final BankResource bank = new BankResource(new BankService(rmiProvider));
-        environment.jersey().register(bank);
+        final PlayerResource players = new PlayerResource(new PlayerService(rmiProvider));
+        environment.jersey().register(players);
 
         final ServerResource server = new ServerResource(new AdminService(rmiProvider));
         environment.jersey().register(server);

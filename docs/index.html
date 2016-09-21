@@ -29,9 +29,109 @@ RESTful API for the Wurm Server
 
 
 # APIs
+Details of each set of API calls is below. Each entry outlines the method, path and the form of
+the results that is returned. The use of `:variableName` in the path indicates that a variable is
+expected to be substituted. For example, when requesting the Bank balance of player
+`Oliver`, the required path is:
+
+`/players/Oliver/money`
+
+On failure of the Wurm interface call, the interface returns the following, where `message` is a
+descriptive message that may vary depending on what error has been encountered:
+
+**Status Code:** `504 GATEWAY_TIMEOUT`
+
+**Response:**
+```json
+{
+"code": 504,
+"message": "Could not create stub for web interface"
+}
+```
 
 
-## /bank/players/{player}/money
+## /players
+
+
+### GET
+
+<a id="getPlayers">Players in the server cluster</a>
+
+All players known to the server cluster. The filter parameter may be specified to retrieve the total count (filter=total)
+
+
+
+
+
+
+
+#### Request
+
+
+**Content-Type: ** application/json
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>filter</th>
+    <td>query</td>
+    <td>no</td>
+    <td>
+        
+        
+    </td>
+    <td> - </td>
+
+    
+            <td>string </td>
+    
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | <a href="#/definitions/Players">Players</a>|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## /players/{player}/money
 
 
 ### GET
@@ -162,87 +262,6 @@ Returns a message indicating the result of the transaction
 | Status Code | Reason      | Response Model |
 |-------------|-------------|----------------|
 | 200    | successful operation | <a href="#/definitions/Result">Result</a>|
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## /players
-
-
-### GET
-
-<a id="getPlayers">Players in the server cluster</a>
-
-All players known to the server cluster. The filter parameter may be specified to retrieve the total count (filter=total)
-
-
-
-
-
-
-
-#### Request
-
-
-**Content-Type: ** application/json
-
-##### Parameters
-
-<table border="1">
-    <tr>
-        <th>Name</th>
-        <th>Located in</th>
-        <th>Required</th>
-        <th>Description</th>
-        <th>Default</th>
-        <th>Schema</th>
-    </tr>
-
-
-
-<tr>
-    <th>filter</th>
-    <td>query</td>
-    <td>no</td>
-    <td>
-        
-        
-    </td>
-    <td> - </td>
-
-    
-            <td>string </td>
-    
-
-</tr>
-
-
-</table>
-
-
-
-#### Response
-
-**Content-Type: ** application/json
-
-
-| Status Code | Reason      | Response Model |
-|-------------|-------------|----------------|
-| 200    | successful operation | <a href="#/definitions/Players">Players</a>|
-
-
-
 
 
 

@@ -5,12 +5,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.quiptiq.wurmrest.Result;
+import com.quiptiq.wurmrest.api.Balance;
 import com.quiptiq.wurmrest.api.Players;
+import com.quiptiq.wurmrest.api.Transaction;
 import com.quiptiq.wurmrest.rmi.PlayerService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
+import org.hibernate.validator.constraints.NotEmpty;
 
 /**
  * Player-specific details and administration
@@ -52,5 +52,41 @@ public class PlayerResource implements Resource {
             throw new WebApplicationException(playerCount.getError(), Response.Status.BAD_GATEWAY);
         }
         throw new WebApplicationException("Invalid filter: " + filter, Response.Status.BAD_REQUEST);
+    }
+
+    @GET
+    @Path("/{player}/money")
+    @ApiOperation(
+            value = "Retrieve the value for a player",
+            notes = "Returns an error if the player cannot be found",
+            response = Balance.class
+    )
+    @ApiResponse(code = 404, message = "Player not found")
+    public Balance getBalance(@PathParam("player") @NotEmpty String player) {
+        Result<Balance> result = playerService.getBalance(player);
+        if (result.isError()) {
+            throw new WebApplicationException(
+                    result.getError(), Response.Status.NOT_FOUND);
+        }
+        return result.getValue();
+    }
+
+    @POST
+    @Path("/{player}/money")
+    @ApiOperation(
+            value = "Add money to or remove money from a player's bank account",
+            notes = "Returns a message indicating the result of the transaction",
+            response = Result.class
+    )
+    @ApiResponse(code = 404, message = "Player not found")
+    public Result<String> addMoney(@PathParam("player") @NotEmpty String player,
+                                   Transaction transaction) {
+        Result<String> result = playerService.addMoney(
+                player, transaction.getAmount(), transaction.getDetails());
+        if (result.isError()) {
+            throw new WebApplicationException(
+                    result.getError(), Response.Status.NOT_FOUND);
+        }
+        return result;
     }
 }

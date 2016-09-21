@@ -1,12 +1,15 @@
 package com.quiptiq.wurmrest.resources;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import com.quiptiq.wurmrest.Result;
+import com.quiptiq.wurmrest.api.Balance;
 import com.quiptiq.wurmrest.api.Players;
+import com.quiptiq.wurmrest.api.Transaction;
 import com.quiptiq.wurmrest.rmi.PlayerService;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.Before;
@@ -76,5 +79,32 @@ public class PlayerResourceTest {
     public void throwOnEmptyFilter() {
         when(service.getPlayerCount()).thenReturn(Result.success(45));
         helper.callGet(PlayerResource.PATH, Players.class);
+    }
+
+    @Test
+    public void validBalance() {
+        String playerName = "Zaphod";
+        Balance balance = new Balance(10);
+        when(service.getBalance(playerName)).thenReturn(Result.success(balance));
+        assertEquals(
+                helper.callGet("/players/" + playerName + "/money", Balance.class)
+                        .getBalance(),
+                balance.getBalance());
+    }
+
+    @Test
+    public void addMoney() {
+        String playerName = "Trillian";
+        Transaction transaction = new Transaction(40, "Test transaction");
+        String successMessage = "Transaction successful";
+        when(service.addMoney(playerName, transaction.getAmount(), transaction.getDetails()))
+                .thenReturn(Result.success(successMessage));
+        assertEquals(
+                helper.callPost(
+                        "/players/" + playerName + "/money",
+                        new GenericType<Result<String>>() {},
+                        transaction
+                ).getValue(),
+                successMessage);
     }
 }
