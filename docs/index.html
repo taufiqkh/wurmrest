@@ -1,21 +1,15 @@
 <!DOCTYPE html>
 <html>
-  <title>API Document</title>
+  <title>Wurm REST API</title>
 
   <xmp theme="united" style="display:none;">
 #Wurm REST API
-
-
-##  | ://
-
 
 RESTful API for the Wurm Server
 
 
 
 **Version** 0.1-SNAPSHOT
-
-[**Terms of Service**]()
 
 [**Apache 2.0**](http://www.apache.org/licenses/LICENSE-2.0.html)
 
@@ -30,9 +24,13 @@ RESTful API for the Wurm Server
 
 # APIs
 Details of each set of API calls is below. Each entry outlines the method, path and the form of
-the results that is returned. The use of `:variableName` in the path indicates that a variable is
-expected to be substituted. For example, when requesting the Bank balance of player
-`Oliver`, the required path is:
+the results that is returned. The use of `{variableName}` in the path indicates that a variable is
+expected to be substituted. For example, when requesting the Bank balance of a player, the
+required path is:
+
+`/players/{player}/money`
+
+So for player named `Oliver`, the required path is:
 
 `/players/Oliver/money`
 
