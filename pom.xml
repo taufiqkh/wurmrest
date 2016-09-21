@@ -107,7 +107,6 @@
                             </info>
                             <templatePath>${basedir}/src/main/hbs/strapdown.html.hbs</templatePath>
                             <outputPath>${basedir}/docs/index.html</outputPath>
-                            <swaggerDirectory>${project.build.directory}/generated/swagger-ui</swaggerDirectory>
                             <attachSwaggerArtifact>true</attachSwaggerArtifact>
                         </apiSource>
                     </apiSources>
