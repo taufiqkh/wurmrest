@@ -1,6 +1,7 @@
 package com.quiptiq.wurmrest.api;
 
 import javax.annotation.concurrent.Immutable;
+import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -12,7 +13,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Immutable
-public class Players {
+public final class Players {
+    private static final CollectionsValidator validator = new CollectionsValidator();
+
     @JsonProperty("count")
     private final int count;
 
@@ -23,11 +26,8 @@ public class Players {
     public Players(@JsonProperty("count") int count,
                    @JsonProperty("players") List<String>
             players) {
+        this.players = validator.validatedImmutable(count, players);
         this.count = count;
-        if (players != null && players.size() != count) {
-            throw new IllegalArgumentException("Count must equal the number of players");
-        }
-        this.players = players;
     }
 
     public Players(int count) {
@@ -36,11 +36,8 @@ public class Players {
     }
 
     public Players(List<String> players) {
-        if (players == null) {
-            throw new IllegalArgumentException("Players must be specified if using a list");
-        }
+        this.players = validator.validatedImmutable(players);
         count = players.size();
-        this.players = players;
     }
 
     public int getCount() {
@@ -49,5 +46,19 @@ public class Players {
 
     public List<String> getPlayers() {
         return players;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof Players)) {
+            return false;
+        }
+        Players other = (Players) obj;
+        return validator.listEquals(players, other.players);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * validator.listHashCode(players) + count;
     }
 }

@@ -75,10 +75,14 @@ public class PlayerResourceTest {
     /**
      * Should throw {@link WebApplicationException} if no filter is specified.
      */
-    @Test(expected = WebApplicationException.class)
+    @Test
     public void throwOnEmptyFilter() {
         when(service.getPlayerCount()).thenReturn(Result.success(45));
-        helper.callGet(PlayerResource.PATH, Players.class);
+        try {
+            helper.callGet(PlayerResource.PATH, Players.class);
+        } catch (WebApplicationException e) {
+            assertEquals(Response.Status.BAD_REQUEST, e.getResponse().getStatusInfo());
+        }
     }
 
     @Test
