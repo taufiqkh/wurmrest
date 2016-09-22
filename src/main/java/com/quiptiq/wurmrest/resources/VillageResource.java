@@ -4,12 +4,16 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import java.util.Optional;
+
 import com.quiptiq.wurmrest.Result;
+import com.quiptiq.wurmrest.api.Village;
 import com.quiptiq.wurmrest.api.Villages;
 import com.quiptiq.wurmrest.rmi.VillageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import org.hibernate.validator.constraints.NotEmpty;
 
 /**
  * Village-specific information
@@ -51,5 +55,42 @@ public class VillageResource implements Resource {
             throw new WebApplicationException(result.getError(), Response.Status.BAD_GATEWAY);
         }
         return result.getValue();
+    }
+
+    @GET
+    @Path("/{village}")
+    @ApiOperation(
+            value = "Village summary",
+            notes = "Summary for a single village, either by id or name. If the value passed in " +
+            "is a number it is treated as an id, otherwise it is treated as a village name.",
+            response = Village.class
+    )
+    @ApiImplicitParam(name = "village", value = "Id or name of the village to retrieve. If it is " +
+            "parseable as an integer it is treated as an id, otherwise it is treated as a name")
+    public Village getVillage(@PathParam("village") @NotEmpty String village) {
+        Result<Optional<Village>> result;
+        try {
+            int villageId = Integer.parseInt(village);
+            result = service.getVillage(villageId);
+            if (result.isSuccess()) {
+                Optional<Village> villageOptional = result.getValue();
+                if (villageOptional.isPresent()) {
+                    return villageOptional.get();
+                }
+                throw new WebApplicationException("Village with id " + villageId +
+                        " was not found", Response.Status.NOT_FOUND);
+            }
+        } catch (NumberFormatException e) {
+            result = service.getVillage(village);
+            if (result.isSuccess()) {
+                Optional<Village> villageOptional = result.getValue();
+                if (villageOptional.isPresent()) {
+                    return villageOptional.get();
+                }
+                throw new WebApplicationException("Village \"" + village + "\" was not found",
+                        Response.Status.NOT_FOUND);
+            }
+        }
+        throw new WebApplicationException(result.getError(), Response.Status.BAD_GATEWAY);
     }
 }

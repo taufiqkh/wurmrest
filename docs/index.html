@@ -519,6 +519,87 @@ All villages for the server, with all details if no filter is applied. If filter
 
 
 
+## /villages/{village}
+
+
+### GET
+
+<a id="getVillage">Village summary</a>
+
+Summary for a single village, either by id or name. If the value passed in is a number it is treated as an id, otherwise it is treated as a village name.
+
+
+
+
+
+
+
+#### Request
+
+
+**Content-Type: ** application/json
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>village</th>
+    <td>path</td>
+    <td>yes</td>
+    <td>
+        
+        
+    </td>
+    <td> - </td>
+
+    
+            <td>string </td>
+    
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | <a href="#/definitions/Village">Village</a>|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Definitions
 

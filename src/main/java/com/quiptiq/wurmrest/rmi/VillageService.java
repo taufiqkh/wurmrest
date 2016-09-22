@@ -1,17 +1,17 @@
 package com.quiptiq.wurmrest.rmi;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeSet;
+import java.rmi.RemoteException;
+import java.util.*;
 
 import com.quiptiq.wurmrest.Result;
 import com.quiptiq.wurmrest.api.TilePosition;
 import com.quiptiq.wurmrest.api.Village;
 import com.quiptiq.wurmrest.api.Villages;
+import com.wurmonline.server.webinterface.WebInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +32,9 @@ public class VillageService extends RmiGameService {
         super(rmiProvider);
     }
 
+    /**
+     * @return Successful result containing total number of villages on the server.
+     */
     public Result<Villages> getVillagesTotal() {
         return invoke("getVillagesTotal", webInterface -> {
             Map<Integer, String> villages = webInterface.getDeeds(getPassword());
@@ -52,6 +55,18 @@ public class VillageService extends RmiGameService {
         return "[Invalid Object]";
     }
 
+    /**
+     * Attempts to get the value for the given key on the village map. If the value found cannot
+     * be cast to the expected type or if the value is required but null, logs an error and
+     * throws a {@link WebApplicationException}.
+     * @param villageMap Map of a single village's data
+     * @param key Key for which to retrieve a value
+     * @param isRequired Whether or not the value is required. Values that are not required do
+     *                   not log an exception if they are null
+     * @param <T> Type of value to expect
+     * @return The value at the given key.
+     */
+    @Nullable
     private <T> T attemptMapGet(@Nonnull Map<String, ?> villageMap, String key,
                                 boolean isRequired) {
         T result;
@@ -75,7 +90,10 @@ public class VillageService extends RmiGameService {
         return attemptMapGet(villageMap, key, true);
     }
 
-    private Village summaryToVillage(int id, @Nonnull Map<String, ?> villageMap) {
+    private Optional<Village> summaryToVillage(int id, @Nullable Map<String, ?> villageMap) {
+        if (villageMap == null) {
+            return Optional.empty();
+        }
         String name = attemptMapGet(villageMap, "Name");
         Long deedId = attemptMapGet(villageMap, "Deedid", false);
         String motto = attemptMapGet(villageMap, "Motto");
@@ -100,37 +118,108 @@ public class VillageService extends RmiGameService {
         } else {
             tokenPosition = new TilePosition(tokenX, tokenY);
         }
-        return new Village(id, name, deedId, motto, kingdom, size, founder, mayor, disbandTime,
-                disbander, numCitizens, numAllies, numGuards, tokenPosition);
+        return Optional.of(new Village(id, name, deedId, motto, kingdom, size, founder, mayor,
+                disbandTime,disbander, numCitizens, numAllies, numGuards, tokenPosition));
     }
 
+    /**
+     * @return Successful result containing all villages on the server. If the villages returned
+     * was null, returns an error result.
+     */
     public Result<Villages> getVillages() {
         return invoke("getVillages", webInterface -> {
             Map<Integer, String> villages = webInterface.getDeeds(getPassword());
             if (villages == null) {
-                villages = new HashMap<>();
+                return Result.error("Null result");
             }
-            boolean nullvillageEncountered = false;
+            boolean nullVillageEncountered = false;
             ArrayList<Village> villagesList = new ArrayList<>(villages.size());
             for (Integer villageId : new TreeSet<>(villages.keySet())) {
                 if (villageId == null) {
-                    nullvillageEncountered = true;
+                    nullVillageEncountered = true;
                 } else if (villages.get(villageId) == null){
-                    nullvillageEncountered = true;
+                    nullVillageEncountered = true;
                 } else {
                     Map<String, ?> villageMap = webInterface.getDeedSummary(getPassword(),
                             villageId);
-                    if (villageMap == null) {
-                        nullvillageEncountered = true;
-                        continue;
+                    Optional<Village> village = summaryToVillage(villageId, villageMap);
+                    if (village.isPresent()) {
+                        villagesList.add(village.get());
+                    } else {
+                        nullVillageEncountered = true;
                     }
-                    villagesList.add(summaryToVillage(villageId, villageMap));
                 }
             }
-            if (nullvillageEncountered) {
+            if (nullVillageEncountered) {
                 logger.warn("Null village id or name found in villages list");
             }
             return Result.success(new Villages(villagesList));
         });
+    }
+
+    /**
+     * Helper method to retrieve a village by id.
+     * @param webInterface Web interface on which to invoke the deed summary call
+     * @param villageId Id of the village to retrieve
+     * @return Successul result with an optional village that may contain the village if the
+     * response was a map formed in the expected way. The optional will contain the village if it
+     * was found, or will be empty if it was not. If the villages returned contained a null, will
+     * return an error result.
+     * @throws RemoteException if an error occurs while calling the web interface
+     */
+    private Result<Optional<Village>> getVillageById(WebInterface webInterface, int villageId)
+            throws RemoteException {
+        Map<String, ?> villageMap =
+                webInterface.getDeedSummary(getPassword(), villageId);
+        Optional<Village> village = summaryToVillage(villageId, villageMap);
+        if (village.isPresent()) {
+            return Result.success(village);
+        } else {
+            return Result.error("Null village found for id " + villageId);
+        }
+    }
+
+    /**
+     * Retrieves the summary for the village with the given name.
+     * @param name of the village whose summary should be retrieved.
+     * @return Result containing an Optional village. Result success is dependent on the
+     * underlying service call, while optional is dependent on whether or not a village was
+     * found.
+     */
+
+    public Result<Optional<Village>> getVillage(@Nonnull String name) {
+        return invoke("getVillage(String)", webInterface -> {
+            Map<Integer, String> villages = webInterface.getDeeds(getPassword());
+            if (villages == null) {
+                return Result.error("Null result");
+            }
+            boolean nullVillageEncountered = false;
+            for (Integer villageId : villages.keySet()) {
+                String villageName = villages.get(villageId);
+                if (villageName == null) {
+                    nullVillageEncountered = true;
+                    continue;
+                }
+                if (name.equals(villageName)) {
+                    return getVillageById(webInterface, villageId);
+                }
+            }
+            if (nullVillageEncountered) {
+                logger.warn("Null village id or name found in villages list");
+            }
+            // Call itself was successful, even if no values were returned
+            return Result.success(Optional.empty());
+        });
+    }
+
+    /**
+     * Retrieves the summary for the village with the given id.
+     * @param villageId Id of the village whose summary should be retrieved.
+     * @return Result containing an Optional village. Result success is dependent on the
+     * underlying service call, while optional is dependent on whether or not a village was
+     * found.
+     */
+    public Result<Optional<Village>> getVillage(int villageId) {
+        return invoke("getVillage(int)", webInterface -> getVillageById(webInterface, villageId));
     }
 }
