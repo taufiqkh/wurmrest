@@ -438,6 +438,87 @@ Determines whether or not the game service is contactable and is running and ret
 
 
 
+## /villages
+
+
+### GET
+
+<a id="getVillages">Villages on the server</a>
+
+All villages for the server, with all details if no filter is applied. If filter is specified with a value of &quot;total&quot;, only a total count is returned. Not other filter values are currently supported.
+
+
+
+
+
+
+
+#### Request
+
+
+**Content-Type: ** application/json
+
+##### Parameters
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Located in</th>
+        <th>Required</th>
+        <th>Description</th>
+        <th>Default</th>
+        <th>Schema</th>
+    </tr>
+
+
+
+<tr>
+    <th>filter</th>
+    <td>query</td>
+    <td>no</td>
+    <td>
+        
+        
+    </td>
+    <td> - </td>
+
+    
+            <td>string </td>
+    
+
+</tr>
+
+
+</table>
+
+
+
+#### Response
+
+**Content-Type: ** application/json
+
+
+| Status Code | Reason      | Response Model |
+|-------------|-------------|----------------|
+| 200    | successful operation | <a href="#/definitions/Villages">Villages</a>|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Definitions
 
@@ -588,6 +669,99 @@ Determines whether or not the game service is contactable and is running and ret
                 
                     
                     string (date-time)
+                
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+    
+</table>
+
+## <a name="/definitions/Village">Village</a>
+
+<table border="1">
+    <tr>
+        <th>name</th>
+        <th>type</th>
+        <th>required</th>
+        <th>description</th>
+        <th>example</th>
+    </tr>
+    
+        <tr>
+            <td>id</td>
+            <td>
+                
+                    
+                    integer (int32)
+                
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+    
+        <tr>
+            <td>name</td>
+            <td>
+                
+                    
+                    string
+                
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+    
+</table>
+
+## <a name="/definitions/Villages">Villages</a>
+
+<table border="1">
+    <tr>
+        <th>name</th>
+        <th>type</th>
+        <th>required</th>
+        <th>description</th>
+        <th>example</th>
+    </tr>
+    
+        <tr>
+            <td>total</td>
+            <td>
+                
+                    
+                    integer (int32)
+                
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+    
+        <tr>
+            <td>count</td>
+            <td>
+                
+                    
+                    integer (int32)
+                
+            </td>
+            <td>optional</td>
+            <td>-</td>
+            <td></td>
+        </tr>
+    
+        <tr>
+            <td>villages</td>
+            <td>
+                
+                
+                    array[<a href="#/definitions/Village">Village</a>]
+                
+                
                 
             </td>
             <td>optional</td>

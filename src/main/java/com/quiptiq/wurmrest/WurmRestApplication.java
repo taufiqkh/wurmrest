@@ -8,9 +8,12 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.quiptiq.wurmrest.health.GameServiceHealthCheck;
 import com.quiptiq.wurmrest.resources.PlayerResource;
+import com.quiptiq.wurmrest.resources.Resource;
 import com.quiptiq.wurmrest.resources.ServerResource;
+import com.quiptiq.wurmrest.resources.VillageResource;
 import com.quiptiq.wurmrest.rmi.*;
 import io.dropwizard.Application;
+import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
@@ -62,11 +65,15 @@ public class WurmRestApplication extends Application<WurmRestConfiguration> {
             // Can't do anything if the URL is bad
             throw new WebApplicationException("Couldn't create service", e);
         }
-        final PlayerResource players = new PlayerResource(new PlayerService(rmiProvider));
-        environment.jersey().register(players);
+        JerseyEnvironment env = environment.jersey();
+        for (Resource resource : new Resource[]{
+                new PlayerResource(new PlayerService(rmiProvider)),
+                new VillageResource(new VillageService(rmiProvider)),
+                new ServerResource(new AdminService(rmiProvider))
+        }) {
+            env.register(resource);
+        }
 
-        final ServerResource server = new ServerResource(new AdminService(rmiProvider));
-        environment.jersey().register(server);
         // Serialization/Deserialization of dates and times as ISO8601 with time zones
         environment.getObjectMapper()
                 .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)

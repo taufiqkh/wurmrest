@@ -8,44 +8,44 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Ordered collection object for deeds information
+ * Ordered collection object for villages information
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Deeds {
+public class Villages {
     private final static CollectionsValidator validator = new CollectionsValidator();
     /**
      * Total number in the system matching a given filter
      */
     private final int total;
     /**
-     * Count of all deeds in the current collection
+     * Count of all villages in the current collection
      */
     private final Integer count;
-    private final List<Deed> deeds;
+    private final List<Village> villages;
 
     @JsonCreator
-    public Deeds(@JsonProperty("total") int total,
-                 @JsonProperty("count") @Nullable Integer count,
-                 @JsonProperty("deeds") @Nullable List<Deed> deeds) {
-        this.deeds = validator.validatedImmutable(count, deeds);
+    public Villages(@JsonProperty("total") int total,
+                    @JsonProperty("count") @Nullable Integer count,
+                    @JsonProperty("villages") @Nullable List<Village> villages) {
+        this.villages = validator.validatedImmutable(count, villages);
         this.total = total;
-        if (count == null && deeds != null) {
-            this.count = deeds.size();
+        if (count == null && villages != null) {
+            this.count = villages.size();
         } else {
             this.count = count;
         }
     }
 
-    public Deeds(int total) {
+    public Villages(int total) {
         this.total = total;
         this.count = null;
-        this.deeds = null;
+        this.villages = null;
     }
 
-    public Deeds(List<Deed> deeds) {
-        this.deeds = validator.validatedImmutable(deeds);
-        this.count = deeds.size();
-        this.total = deeds.size();
+    public Villages(List<Village> villages) {
+        this.villages = validator.validatedImmutable(villages);
+        this.count = villages.size();
+        this.total = villages.size();
     }
 
     public int getTotal() {
@@ -58,24 +58,24 @@ public class Deeds {
     }
 
     @Nullable
-    public List<Deed> getDeeds() {
-        return deeds;
+    public List<Village> getVillages() {
+        return villages;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Deeds)) {
+        if (obj == null || !(obj instanceof Villages)) {
             return false;
         }
-        Deeds other = (Deeds) obj;
+        Villages other = (Villages) obj;
         return total == other.total
                 && (count == null || count.equals(other.count))
-                && validator.listEquals(deeds, other.deeds);
+                && validator.listEquals(villages, other.villages);
     }
 
     @Override
     public int hashCode() {
-        int result = validator.listHashCode(deeds);
+        int result = validator.listHashCode(villages);
         result = 31 * result + ((count == null) ? 0 : count);
         return 31 * result + total;
     }

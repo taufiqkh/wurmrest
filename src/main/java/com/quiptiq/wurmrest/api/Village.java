@@ -8,25 +8,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 
 /**
- * Encapsulates all information about one specific deed
+ * Encapsulates all information about one specific village
  */
 @Immutable
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public final class Deed {
+public final class Village {
     private final int id;
 
     private final String name;
 
     /**
-     * Create a new Deed with the given id and name
-     * @param id Identifier for the deed
-     * @param name Name of the deed, cannot be null
+     * Create a new Village with the given id and name
+     * @param id Identifier for the village
+     * @param name Name of the village, cannot be null
      * @throws IllegalArgumentException if the name is null
      */
     @JsonCreator
-    public Deed(@JsonProperty("id") int id, @JsonProperty("name") @NotEmpty String name) {
+    public Village(@JsonProperty("id") int id, @JsonProperty("name") @NotEmpty String name) {
         if (name == null) {
-            throw new IllegalArgumentException("Deed name cannot be null");
+            throw new IllegalArgumentException("Village name cannot be null");
         }
         this.id = id;
         this.name = name;
@@ -42,11 +42,11 @@ public final class Deed {
 
     @Override
     public boolean equals(Object other) {
-        if (other == null || !(other instanceof Deed)) {
+        if (other == null || !(other instanceof Village)) {
             return false;
         }
-        Deed deed = (Deed) other;
-        return this.id == deed.id && this.name.equals(deed.name);
+        Village village = (Village) other;
+        return this.id == village.id && this.name.equals(village.name);
     }
 
     @Override

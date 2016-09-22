@@ -41,7 +41,7 @@ public class PlayerResource implements Resource {
     })
     public Players getPlayers(@QueryParam("filter") String filter) {
         if (filter == null) {
-            throw new WebApplicationException("Empty filter and deed not supported",
+            throw new WebApplicationException("Empty filter and village not supported",
                     Response.Status.BAD_REQUEST);
         }
         if ("total".equals(filter)) {
