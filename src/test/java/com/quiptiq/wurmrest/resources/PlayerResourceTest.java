@@ -17,6 +17,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -78,11 +79,14 @@ public class PlayerResourceTest {
     @Test
     public void throwOnEmptyFilter() {
         when(service.getPlayerCount()).thenReturn(Result.success(45));
+        WebApplicationException caught = null;
         try {
             helper.callGet(PlayerResource.PATH, Players.class);
         } catch (WebApplicationException e) {
-            assertEquals(Response.Status.BAD_REQUEST, e.getResponse().getStatusInfo());
+            caught = e;
         }
+        assertNotNull(caught);
+        assertEquals(Response.Status.BAD_REQUEST, caught.getResponse().getStatusInfo());
     }
 
     @Test

@@ -53,14 +53,14 @@ public class VillageResourceTest {
     @Test
     public void totalThrowOnBadFilter() {
         when(service.getVillagesTotal()).thenReturn(Result.success(new Villages(321)));
-        WebApplicationException found = null;
+        WebApplicationException caught = null;
         try {
             helper.callGet(PATH, Villages.class, "filter", "invalid");
         } catch (WebApplicationException e) {
-            found = e;
+            caught = e;
         }
-        assertNotNull(found);
-        assertEquals(Response.Status.BAD_REQUEST, found.getResponse().getStatusInfo());
+        assertNotNull(caught);
+        assertEquals(Response.Status.BAD_REQUEST, caught.getResponse().getStatusInfo());
     }
 
     @Test(expected = WebApplicationException.class)
