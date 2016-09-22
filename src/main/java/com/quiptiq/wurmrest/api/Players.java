@@ -3,6 +3,7 @@ package com.quiptiq.wurmrest.api;
 import javax.annotation.concurrent.Immutable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -49,16 +50,16 @@ public final class Players {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Players)) {
-            return false;
-        }
-        Players other = (Players) obj;
-        return validator.listEquals(players, other.players);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Players players1 = (Players) o;
+        return count == players1.count &&
+                Objects.equals(players, players1.players);
     }
 
     @Override
     public int hashCode() {
-        return 31 * validator.listHashCode(players) + count;
+        return Objects.hash(count, players);
     }
 }

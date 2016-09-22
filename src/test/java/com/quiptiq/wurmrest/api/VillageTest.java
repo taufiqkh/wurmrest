@@ -65,6 +65,16 @@ public class VillageTest {
     public void serialisesToJson() throws Exception {
         Village village = new Village(1, "Hobart");
         final String expected = MAPPER.writeValueAsString(
+                MAPPER.readValue(jsonFixture("villageMinimal"), Village.class));
+        assertEquals(expected, MAPPER.writeValueAsString(village));
+    }
+
+    @Test
+    public void serialisesAllToJson() throws Exception {
+        Village village = new Village(2, "Adelaide", 23L, "Testing is fun", "Australia", 24,
+                "Mr Adelaide", "Mayor Adelaide", "Some time", "disband person", 24, 321, 8,
+                new TilePosition(23, 44));
+        final String expected = MAPPER.writeValueAsString(
                 MAPPER.readValue(jsonFixture("village"), Village.class));
         assertEquals(expected, MAPPER.writeValueAsString(village));
     }

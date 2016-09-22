@@ -1,4 +1,19 @@
 {
-  "id": 1,
-  "name": "Hobart"
+  "id": 2,
+  "name": "Adelaide",
+  "deedId": 23,
+  "motto": "Testing is fun",
+  "kingdom": "Australia",
+  "size": 24,
+  "founder": "Mr Adelaide",
+  "mayor": "Mayor Adelaide",
+  "readableTimeUntilDisband": "Some time",
+  "disbander": "disband person",
+  "citizens": 24,
+  "allies": 321,
+  "guards": 8,
+  "tokenPosition": {
+    "x": 23,
+    "y": 44
+  }
 }

@@ -2,6 +2,7 @@ package com.quiptiq.wurmrest.api;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -63,20 +64,17 @@ public class Villages {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Villages)) {
-            return false;
-        }
-        Villages other = (Villages) obj;
-        return total == other.total
-                && (count == null || count.equals(other.count))
-                && validator.listEquals(villages, other.villages);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Villages villages1 = (Villages) o;
+        return total == villages1.total &&
+                Objects.equals(count, villages1.count) &&
+                Objects.equals(villages, villages1.villages);
     }
 
     @Override
     public int hashCode() {
-        int result = validator.listHashCode(villages);
-        result = 31 * result + ((count == null) ? 0 : count);
-        return 31 * result + total;
+        return Objects.hash(total, count, villages);
     }
 }

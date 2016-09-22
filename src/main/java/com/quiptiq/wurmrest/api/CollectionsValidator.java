@@ -34,47 +34,4 @@ class CollectionsValidator {
         }
         return Collections.unmodifiableList(new ArrayList<>(collection));
     }
-
-    /**
-     * Performs a comparison between the two lists provided. Returns true if and only if:
-     * <ul>
-     *     <li>Both OR neither of the lists are null</li>
-     *     <li>The size of the two lists is equal</li>
-     *     <li>Each of the elements of the lists are equal, either through both being null OR by
-     *     calling .equals on two non-null elements</li>
-     * </ul>
-     * @param aList First list to compare
-     * @param other Second list to compare
-     * @param <T> Type of element
-     * @return True if the two lists are equal according to the above rules
-     */
-    <T> boolean listEquals(List<T> aList, List<T> other) {
-        if (aList == null) {
-            return other == null;
-        }
-        if (aList.size() != other.size()) {
-            return false;
-        }
-        for (int i = 0; i < aList.size(); i++) {
-            if (aList.get(i) == null) {
-                if (other.get(i) != null) {
-                    return false;
-                }
-            } else if (!aList.get(i).equals(other.get(i))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    <T> int listHashCode(List<T> list) {
-        int result = 0;
-        if (list == null) {
-            return result;
-        }
-        for (T elem : list) {
-            result = 31 * result + elem.hashCode();
-        }
-        return result;
-    }
 }
