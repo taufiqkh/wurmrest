@@ -51,14 +51,14 @@ public class RmiProvider {
      * @throws MalformedURLException if the URL cannot be formed.
      */
     private WebInterface attemptLookup() throws MalformedURLException {
-        logger.info("Creating new web service at {}", lookup);
+        logger.info("Creating new web service from RMI lookup at {}", lookup);
         WebInterface newInterface = null;
         try {
             newInterface = (WebInterface) java.rmi.Naming.lookup(lookup);
+            logger.info("Lookup performed successfully");
         } catch (NotBoundException | RemoteException e) {
             logger.error("Couldn't look up remote interface at " + lookup, e);
         }
-        logger.info("Lookup performed successfully");
         return newInterface;
     }
 
