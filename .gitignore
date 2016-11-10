@@ -227,3 +227,6 @@ pip-log.txt
 
 # Maven shade
 dependency-reduced-pom.xml
+
+# Ignore dev config file
+dev.yml
